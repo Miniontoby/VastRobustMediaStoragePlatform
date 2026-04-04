@@ -6,7 +6,7 @@ import { env } from '$env/dynamic/private';
 import { getRequestEvent } from '$app/server';
 import { db } from '$lib/server/db';
 
-export const auth = !building : betterAuth({
+export const auth = !building ? betterAuth({
 	baseURL: env.ORIGIN,
 	secret: env.BETTER_AUTH_SECRET,
 	database: drizzleAdapter(db, { provider: 'mysql' }),
@@ -14,4 +14,4 @@ export const auth = !building : betterAuth({
 	plugins: [
 		sveltekitCookies(getRequestEvent) // make sure this is the last plugin in the array
 	]
-}) ? {};
+}) : {};
