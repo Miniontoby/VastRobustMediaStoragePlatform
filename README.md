@@ -16,22 +16,43 @@ pnpm install
 
 ### Installing on Openbsd
 
-Use pnpm instead of npm, it handles the WASM overrides correctly.
-The following overrides are already in package.json under `pnpm.overrides`:
-- rollup -> @rollup/wasm-node
-- lightningcss -> lightningcss-wasm
-- @tailwindcss/oxide -> @tailwindcss/oxide-wasm32-wasi
-- @parcel/watcher -> @parcel/watcher-wasm
+For OpenBSD you'll need to patch the package.json file, in order to make sure that OpenBSD uses the WASM variants.
+This is needed because these packages do not provide direct support for OpenBSD.
 
-Then run install with --force!
-```
-pnpm install --force
+Save the following code into `fix_openbsd.patch` file and then run `git apply fix_openbsd.patch`
+```json
+diff --git a/package.json b/package.json
+index 4410c92..77114c8 100644
+--- a/package.json
++++ b/package.json
+@@ -66,5 +66,18 @@
+ 		"vite-plugin-devtools-json": "^1.0.0",
+ 		"vitest": "^4.1.4",
+ 		"vitest-browser-svelte": "^2.1.1"
++	},
++	"pnpm": {
++		"supportedArchitectures": {
++			"os": ["openbsd", "any"],
++			"cpu": ["x64", "wasm32"],
++			"libc": ["unknown", "any"]
++		},
++		"overrides": {
++			"rollup": "npm:@rollup/wasm-node",
++			"@parcel/watcher": "npm:@parcel/watcher-wasm",
++			"lightningcss": "npm:lightningcss-wasm",
++			"@tailwindcss/oxide": "npm:@tailwindcss/oxide-wasm32-wasi"
++		}
+ 	}
+ }
 ```
 
-When building, you'll need a lot of memory. 2GB won't cut it:
+After that is done, then you can run the install like normal:
 ```
-NODE_OPTIONS=--max-old-space-size=4096 pnpm run build
+pnpm install
 ```
+
+If it doesn't want to work, you can add `--force` at the end (`pnpm install --force`)
+
 
 ## Developing
 
