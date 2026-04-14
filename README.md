@@ -20,7 +20,7 @@ For OpenBSD you'll need to patch the package.json file, in order to make sure th
 This is needed because these packages do not provide direct support for OpenBSD.
 
 Save the following code into `fix_openbsd.patch` file and then run `git apply fix_openbsd.patch`
-```json
+```patch
 diff --git a/package.json b/package.json
 index 4410c92..77114c8 100644
 --- a/package.json
@@ -47,7 +47,7 @@ index 4410c92..77114c8 100644
 ```
 
 After that is done, then you can run the install like normal:
-```
+```sh
 pnpm install
 ```
 
