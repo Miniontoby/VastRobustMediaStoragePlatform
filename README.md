@@ -1,32 +1,47 @@
-# sv
+# VastRobustMediaStoragePlatform (VRMSP)
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A Free and Open Source Software project that gives you a self hostable web platform to share big/huge video/picture files.
+This is a project for college.
 
-## Creating a project
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Installing
+
+You can clone and then install using pnpm install!.
 
 ```sh
-# create a new project
-npx sv create my-app
+git clone https://github.com/Miniontoby/VastRobustMediaStoragePlatform.git
+cd VastRobustMediaStoragePlatform
+pnpm install
 ```
 
-To recreate this project with the same configuration:
+### Installing on Openbsd
 
-```sh
-# recreate this project
-npx sv@0.14.0 create --template minimal --types jsdoc --add prettier eslint vitest="usages:unit,component" tailwindcss="plugins:typography,forms" sveltekit-adapter="adapter:node" devtools-json drizzle="database:mysql+mysql:mysql2+docker:no" better-auth="demo:password" playwright paraglide="languageTags:en, nl+demo:yes" storybook --install npm VastRobustMediaStoragePlatform
+Use pnpm instead of npm, it handles the WASM overrides correctly.
+The following overrides are already in package.json under `pnpm.overrides`:
+- rollup -> @rollup/wasm-node
+- lightningcss -> lightningcss-wasm
+- @tailwindcss/oxide -> @tailwindcss/oxide-wasm32-wasi
+- @parcel/watcher -> @parcel/watcher-wasm
+
+Then run install with --force!
+```
+pnpm install --force
+```
+
+When building, you'll need a lot of memory. 2GB won't cut it:
+```
+NODE_OPTIONS=--max-old-space-size=4096 pnpm run build
 ```
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Once you've created a project and installed dependencies with `pnpm install`, start a development server:
 
 ```sh
-npm run dev
+pnpm run dev
 
 # or start the server and open the app in a new browser tab
-npm run dev -- --open
+pnpm run dev -- --open
 ```
 
 ## Building
@@ -34,9 +49,8 @@ npm run dev -- --open
 To create a production version of your app:
 
 ```sh
-npm run build
+pnpm run build
 ```
 
-You can preview the production build with `npm run preview`.
+You can preview the production build with `pnpm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
