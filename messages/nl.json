@@ -1,4 +1,23 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from nl!"
+	"hello_world": "Hello, {name} from nl!",
+	"actions": {
+		"upload": "Uploaden",
+		"cancel": "Annuleren",
+		"okay": "Oké"
+	},
+	"pages": {
+		"upload": {
+			"title": "Video Uploaden",
+			"description": "Selecteer een video bestand hier beneden, om het te uploaden naar het platform!",
+			"uploading": {
+				"title": "Uploaden...",
+				"description": "Video wordt geuploaded... {progress}%"
+			},
+			"uploaded": {
+				"title": "Succes!",
+				"description": "Video is geuploaded!"
+			}
+		}
+	}
 }
