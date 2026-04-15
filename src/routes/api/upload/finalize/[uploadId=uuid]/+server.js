@@ -13,7 +13,11 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  * Finalizes an upload by concatenating all chunks into the final file.
  * @type {import('./$types').RequestHandler}
  */
-export const POST = async ({ params }) => {
+export const POST = async ({ params, locals }) => {
+	if (!locals.user) {
+		return json({ error: 'Not logged in' }, { status: 400 });
+	}
+	const userId = locals.user.id;
 	// TODO: get authenticated user from better-auth, reject if not authed
 
 	const { uploadId } = params;
@@ -26,8 +30,8 @@ export const POST = async ({ params }) => {
 
 	// TODO: verify session.userId === userId once auth is implemented
 
-	const receivedChunks = /** @type {number[]} */ (session.receivedChunks);
-	if (receivedChunks.length !== session.totalChunks) {
+	const receivedChunks = /** @type {number[]} */ JSON.parse(session.receivedChunks);
+	if (receivedChunks.length < session.totalChunks) {
 		return json({
 			error: 'Not all chunks received',
 			missing: Array.from({ length: session.totalChunks }, (_, i) => i).filter(i => !receivedChunks.includes(i)),

@@ -7,7 +7,11 @@ import { eq } from 'drizzle-orm';
  * Returns the current status of an upload session.
  * @type {import('./$types').RequestHandler}
  */
-export const GET = async ({ params }) => {
+export const GET = async ({ params, locals }) => {
+	if (!locals.user) {
+		return json({ error: 'Not logged in' }, { status: 400 });
+	}
+	const userId = locals.user.id;
 	// TODO: get authenticated user from better-auth, reject if not authed
 
 	const { uploadId } = params;
@@ -20,7 +24,7 @@ export const GET = async ({ params }) => {
 
 	// TODO: verify session.userId === userId once auth is implemented
 
-	const receivedChunks = /** @type {number[]} */ (session.receivedChunks);
+	const receivedChunks = /** @type {number[]} */ JSON.parse(session.receivedChunks);
 	const missingChunks = Array.from(
 		{ length: session.totalChunks },
 		(_, i) => i

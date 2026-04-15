@@ -14,9 +14,12 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  * Expects multipart/form-data with: chunkIndex, totalChunks, chunk
  * @type {import('./$types').RequestHandler}
  */
-export const POST = async ({ request, params }) => {
+export const POST = async ({ request, params, locals }) => {
+	if (!locals.user) {
+		return json({ error: 'Not logged in' }, { status: 400 });
+	}
+	const userId = locals.user.id;
 	// TODO: get authenticated user from better-auth, reject if not authed
-	const userId = 'todo';
 
 	const { uploadId } = params;
 
@@ -49,7 +52,7 @@ export const POST = async ({ request, params }) => {
 	const chunkPath = path.join(uploadPath, `${chunkIndex}.part`);
 	await writeFile(chunkPath, chunkBuffer);
 
-	const receivedChunks = /** @type {number[]} */ (session.receivedChunks);
+	const receivedChunks = /** @type {number[]} */ JSON.parse(session.receivedChunks);
 	if (!receivedChunks.includes(chunkIndex)) {
 		receivedChunks.push(chunkIndex);
 	}
@@ -58,5 +61,5 @@ export const POST = async ({ request, params }) => {
 		.set({ receivedChunks, status: 'uploading' })
 		.where(eq(upload.id, uploadId));
 
-	return json({ received: chunkIndex });
+	return json({ received: chunkIndex }, { status: 201 });
 };

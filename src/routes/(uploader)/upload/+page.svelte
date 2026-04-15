@@ -20,7 +20,9 @@
 			progress = 0;
 			const file = files[0];
 			try {
-				await uploadFile(file, updateProgressCallback);
+				const response = await uploadFile(file, updateProgressCallback);
+				console.log(response)
+				progress = 100;
 				// TODO Add message when done
 			} catch (e) {
 				console.error(e);

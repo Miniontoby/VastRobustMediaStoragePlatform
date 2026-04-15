@@ -13,9 +13,11 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  * Must be called before any chunk uploads.
  * @type {import('./$types').RequestHandler}
  */
-export const POST = async ({ request }) => {
-	// TODO: get authenticated user from better-auth, reject if not authed
-	const userId = 'todo';
+export const POST = async ({ request, locals }) => {
+	if (!locals.user) {
+		return json({ error: 'Not logged in' }, { status: 400 });
+	}
+	const userId = locals.user.id;
 
 	const formData = await request.formData();
 	const filename = formData.get('filename');
@@ -39,5 +41,5 @@ export const POST = async ({ request }) => {
 		status: 'pending',
 	});
 
-	return json({ uploadId });
+	return json({ uploadId }, { status: 201 });
 };

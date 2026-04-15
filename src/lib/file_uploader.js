@@ -79,7 +79,7 @@ export async function uploadFile(file, progressCallback) {
 	if (!file) throw new Error('LIB_NO_FILE_TO_UPLOAD', { cause: 'USER_FAULT' });
 
 	const fileSize = file.size;
-	const chunkSize = 20000; // 20 mb?
+	const chunkSize = 200_000; // 200 kb?
 	const totalChunks = Math.ceil(fileSize / chunkSize);
 
 	try {
