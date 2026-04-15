@@ -18,20 +18,17 @@ export const POST = async ({ params, locals }) => {
 		return json({ error: 'Not logged in' }, { status: 400 });
 	}
 	const userId = locals.user.id;
-	// TODO: get authenticated user from better-auth, reject if not authed
 
 	const { uploadId } = params;
 
 	const [session] = await db.select().from(upload).where(eq(upload.id, uploadId)).limit(1);
 
-	if (!session) {
+	if (!session || session.userId !== userId) {
 		return json({ error: 'Unknown uploadId' }, { status: 404 });
 	}
 
-	// TODO: verify session.userId === userId once auth is implemented
-
 	const receivedChunks = /** @type {number[]} */ JSON.parse(session.receivedChunks);
-	if (receivedChunks.length < session.totalChunks) {
+	if (receivedChunks.length !== session.totalChunks) {
 		return json({
 			error: 'Not all chunks received',
 			missing: Array.from({ length: session.totalChunks }, (_, i) => i).filter(i => !receivedChunks.includes(i)),
@@ -40,8 +37,11 @@ export const POST = async ({ params, locals }) => {
 
 	await db.update(upload).set({ status: 'finalizing' }).where(eq(upload.id, uploadId));
 
+	// filename will use the uuid plus .mp4 to make sure no path traversal can happen
+	const filename = uploadId + '.mp4'; // session.filename;
+
 	const uploadPath = path.join(UPLOAD_DIR, uploadId);
-	const finalPath = path.join(UPLOAD_DIR, session.filename);
+	const finalPath = path.join(UPLOAD_DIR, filename);
 	const writeStream = createWriteStream(finalPath);
 
 	try {
@@ -60,7 +60,7 @@ export const POST = async ({ params, locals }) => {
 		await db.update(upload).set({ status: 'done' }).where(eq(upload.id, uploadId));
 		// TODO:  remove upload from upload table and add file to the videos table of the user
 
-		return json({ done: true, filename: session.filename });
+		return json({ done: true, filename: filename });
 	} catch (err) {
 		writeStream.destroy();
 		await db.update(upload).set({ status: 'error' }).where(eq(upload.id, uploadId));
