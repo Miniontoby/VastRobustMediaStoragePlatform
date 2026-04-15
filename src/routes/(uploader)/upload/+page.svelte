@@ -40,26 +40,26 @@
 	}
 </script>
 
-<h1>{m.pages.upload.title()}</h1>
-<p>{m.pages.upload.description()}</p>
+<h1>{m['pages.upload.title']()}</h1>
+<p>{m['pages.upload.description']()}</p>
 
 <form on:submit|preventDefault={submitCallback}>
 	<input type="file" id="video" name="video" bind:this={chooseFileBtn} accept="video/*" /><br/>
-	<button disabled={progress === null}>{m.actions.upload()}</button>
+	<button disabled={progress === null}>{m['actions.upload']()}</button>
 </form>
 
 {#if progress !== null}
 	<div role="alert" class="popup">
 		{#if progress === 100}
-			<h1>{m.pages.upload.uploaded.title()}</h1>
+			<h1>{m['pages.upload.uploaded.title']()}</h1>
 			<br>
-			<p>{m.pages.upload.uploaded.description()}</p>
-			<button onclick={closePopup}>{m.actions.okay()}</button>
+			<p>{m['pages.upload.uploaded.description']()}</p>
+			<button onclick={closePopup}>{m['actions.okay']()}</button>
 		{:else}
-			<h1>{m.pages.upload.uploading.title()}</h1>
+			<h1>{m['pages.upload.uploading.title']()}</h1>
 			<br>
-			<p>{m.pages.upload.uploading.description({ progress })}</p>
-			<button onclick={cancelUpload}>{m.actions.cancel()}</button>
+			<p>{m['pages.upload.uploading.description({ progress })}</p>
+			<button onclick={cancelUpload}>{m['actions.cancel']()}</button>
 		{/if}
 	</div>
 {/if}
