@@ -46,7 +46,7 @@
 
 <form onsubmit={submitCallback}>
 	<input type="file" id="video" name="video" bind:files={files} accept="video/*" /><br/>
-	<button disabled={progress === null}>{m['actions.upload']()}</button>
+	<button disabled={progress !== null}>{m['actions.upload']()}</button>
 </form>
 
 {#if progress !== null}

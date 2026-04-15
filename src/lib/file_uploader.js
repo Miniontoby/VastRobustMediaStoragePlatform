@@ -83,7 +83,7 @@ export async function uploadFile(file, progressCallback) {
 	const totalChunks = Math.ceil(fileSize / chunkSize);
 
 	try {
-		const uploadId = await initUpload(file, totalChunk);
+		const uploadId = await initUpload(file, totalChunks);
 		for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
 			await uploadChunk(file, uploadId, chunkIndex, totalChunks, chunkSize);
 			progressCallback(Math.round(chunkIndex / totalChunks * 100));
