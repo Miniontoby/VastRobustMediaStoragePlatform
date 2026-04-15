@@ -14,6 +14,8 @@
 	}
 
 	async function submitCallback(event) {
+		event.preventDefault();
+
 		// TODO Maybe in a new usecase add multiple file uploads at once?
 		if (files && files.length > 0) {
 			progress = 0;
@@ -43,7 +45,7 @@
 <h1>{m['pages.upload.title']()}</h1>
 <p>{m['pages.upload.description']()}</p>
 
-<form on:submit|preventDefault={submitCallback}>
+<form onsubmit={submitCallback}>
 	<input type="file" id="video" name="video" bind:this={chooseFileBtn} accept="video/*" /><br/>
 	<button disabled={progress === null}>{m['actions.upload']()}</button>
 </form>

@@ -1,4 +1,4 @@
-import { mysqlTable, int, text, varchar, timestamp, json, boolean } from 'drizzle-orm/mysql-core';
+import { mysqlTable, boolean, index, int, text, varchar, timestamp, json } from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 import { user } from './auth.schema';
 
