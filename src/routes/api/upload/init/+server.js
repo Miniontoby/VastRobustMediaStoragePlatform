@@ -17,9 +17,11 @@ export const POST = async ({ request }) => {
 	// TODO: get authenticated user from better-auth, reject if not authed
 	const userId = 'todo';
 
-	const { filename, totalChunks } = await request.json();
+	const formData = await request.formData();
+	const filename = formData.get('filename');
+	const totalChunks = Number(formData.get('totalChunks'));
 
-	if (!filename || !totalChunks) {
+	if (!filename || isNaN(totalChunks)) {
 		return json({ error: 'Missing filename or totalChunks' }, { status: 400 });
 	}
 
