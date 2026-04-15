@@ -3,8 +3,8 @@ import { createWriteStream, existsSync } from 'fs';
 import { readFile, unlink, rmdir } from 'fs/promises';
 import path from 'path';
 import { env } from '$env/dynamic/private';
-import { db } from '$lib/db';
-import { upload } from '$lib/db/upload.schema';
+import { db } from '$lib/server/db';
+import { upload } from '$lib/server/db/video.schema';
 import { eq } from 'drizzle-orm';
 
 const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';

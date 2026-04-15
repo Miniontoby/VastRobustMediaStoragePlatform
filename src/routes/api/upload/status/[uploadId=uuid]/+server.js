@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/db';
-import { upload } from '$lib/db/upload.schema';
+import { db } from '$lib/server/db';
+import { upload } from '$lib/server/db/video.schema';
 import { eq } from 'drizzle-orm';
 
 /**
