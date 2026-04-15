@@ -4,7 +4,6 @@
 
 	let files = $state();
 	let progress = $state(null);
-	let chooseFileBtn; // bind:this on the file upload
 
 	function updateProgressCallback(percentage) {
 		progress = percentage;
@@ -46,7 +45,7 @@
 <p>{m['pages.upload.description']()}</p>
 
 <form onsubmit={submitCallback}>
-	<input type="file" id="video" name="video" bind:this={chooseFileBtn} accept="video/*" /><br/>
+	<input type="file" id="video" name="video" bind:files={files} accept="video/*" /><br/>
 	<button disabled={progress === null}>{m['actions.upload']()}</button>
 </form>
 
@@ -60,7 +59,7 @@
 		{:else}
 			<h1>{m['pages.upload.uploading.title']()}</h1>
 			<br>
-			<p>{m['pages.upload.uploading.description({ progress })}</p>
+			<p>{m['pages.upload.uploading.description']({ progress })}</p>
 			<button onclick={cancelUpload}>{m['actions.cancel']()}</button>
 		{/if}
 	</div>
