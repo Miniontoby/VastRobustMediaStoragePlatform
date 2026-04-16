@@ -14,9 +14,10 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ params, locals }) => {
-	if (!locals.user) {
-		return json({ error: 'Not logged in' }, { status: 400 });
-	}
+	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });
+
+	if (!locals.user) return json({ error: 'Not logged in' }, { status: 400 });
+
 	const userId = locals.user.id;
 
 	const { uploadId } = params;
@@ -27,7 +28,7 @@ export const POST = async ({ params, locals }) => {
 		return json({ error: 'Unknown uploadId' }, { status: 404 });
 	}
 
-	const receivedChunks = /** @type {number[]} */ JSON.parse(session.receivedChunks);
+	const receivedChunks = /** @type {number[]} */ JSON.parse(String(session.receivedChunks));
 	if (receivedChunks.length !== session.totalChunks) {
 		return json({
 			error: 'Not all chunks received',
@@ -48,9 +49,13 @@ export const POST = async ({ params, locals }) => {
 		for (let i = 0; i < session.totalChunks; i++) {
 			const chunkPath = path.join(uploadPath, `${i}.part`);
 			const chunkData = await readFile(chunkPath);
-			await new Promise((resolve, reject) => {
+			/**
+			 * @type {Promise<void>}
+			 */
+			const write = new Promise((resolve, reject) => {
 				writeStream.write(chunkData, err => err ? reject(err) : resolve());
 			});
+			await write;
 			await unlink(chunkPath);
 		}
 

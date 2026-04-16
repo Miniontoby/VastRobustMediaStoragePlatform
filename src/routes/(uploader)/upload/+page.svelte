@@ -3,8 +3,10 @@
 	import { uploadFile } from '$lib/file_uploader.js';
 
 	let files = $state();
+	/** @type {Number|null} */
 	let progress = $state(null);
 
+	/** @param {Number} percentage */
 	function updateProgressCallback(percentage) {
 		progress = percentage;
 		if (progress === 100) {
@@ -12,6 +14,7 @@
 		}
 	}
 
+	/** @param {SubmitEvent} event */
 	async function submitCallback(event) {
 		event.preventDefault();
 

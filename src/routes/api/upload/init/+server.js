@@ -14,13 +14,14 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ request, locals }) => {
-	if (!locals.user) {
-		return json({ error: 'Not logged in' }, { status: 400 });
-	}
+	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });
+
+	if (!locals.user) return json({ error: 'Not logged in' }, { status: 400 });
+
 	const userId = locals.user.id;
 
 	const formData = await request.formData();
-	const filename = formData.get('filename');
+	const filename = String(formData.get('filename'));
 	const totalChunks = Number(formData.get('totalChunks'));
 
 	if (!filename || isNaN(totalChunks)) {

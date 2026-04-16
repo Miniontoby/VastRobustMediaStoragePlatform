@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 
 
 import { auth } from '$lib/server/auth';
@@ -12,6 +12,8 @@ export const load = (event) => {
 
 export const actions = {
 	signOut: async (event) => {
+		if (!auth) return fail(500, { message: 'Unexpected error' });
+
 		await auth.api.signOut({
 			headers: event.request.headers
 		});

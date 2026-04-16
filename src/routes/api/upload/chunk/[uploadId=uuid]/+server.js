@@ -15,9 +15,10 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ request, params, locals }) => {
-	if (!locals.user) {
-		return json({ error: 'Not logged in' }, { status: 400 });
-	}
+	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });
+
+	if (!locals.user) return json({ error: 'Not logged in' }, { status: 400 });
+
 	const userId = locals.user.id;
 
 	const { uploadId } = params;
@@ -49,7 +50,7 @@ export const POST = async ({ request, params, locals }) => {
 	const chunkPath = path.join(uploadPath, `${chunkIndex}.part`);
 	await writeFile(chunkPath, chunkBuffer);
 
-	const receivedChunks = /** @type {number[]} */ JSON.parse(session.receivedChunks);
+	const receivedChunks = /** @type {number[]} */ JSON.parse(String(session.receivedChunks));
 	if (!receivedChunks.includes(chunkIndex)) {
 		receivedChunks.push(chunkIndex);
 	}

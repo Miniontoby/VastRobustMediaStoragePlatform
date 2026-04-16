@@ -8,9 +8,10 @@ import { eq } from 'drizzle-orm';
  * @type {import('./$types').RequestHandler}
  */
 export const GET = async ({ params, locals }) => {
-	if (!locals.user) {
-		return json({ error: 'Not logged in' }, { status: 400 });
-	}
+	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });
+
+	if (!locals.user) return json({ error: 'Not logged in' }, { status: 400 });
+
 	const userId = locals.user.id;
 
 	const { uploadId } = params;
@@ -21,7 +22,7 @@ export const GET = async ({ params, locals }) => {
 		return json({ error: 'Unknown uploadId' }, { status: 404 });
 	}
 
-	const receivedChunks = /** @type {number[]} */ JSON.parse(session.receivedChunks);
+	const receivedChunks = /** @type {number[]} */ JSON.parse(String(session.receivedChunks));
 	const missingChunks = Array.from(
 		{ length: session.totalChunks },
 		(_, i) => i

@@ -72,8 +72,8 @@ export async function finalizeUpload(file, uploadId) {
 /**
  * Run the full upload sequence
  * @param {File} file - The full file being uploaded
- * @param {(progress) => void} progressCallback - A function callback for status updates
- * @returns {Promise<void>}
+ * @param {(progress: Number) => void} progressCallback - A function callback for status updates
+ * @returns {Promise<object>}
  */
 export async function uploadFile(file, progressCallback) {
 	if (!file) throw new Error('LIB_NO_FILE_TO_UPLOAD', { cause: 'USER_FAULT' });
