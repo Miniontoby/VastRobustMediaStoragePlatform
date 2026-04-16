@@ -1,3 +1,39 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+@layer base {
+	h1 {
+		font-size: var(--text-2xl);
+	}
+	h2 {
+		font-size: var(--text-xl);
+	}
+	h3 {
+		font-size: var(--text-lg);
+	}
+	a {
+		color: var(--color-blue-600);
+		text-decoration-line: underline;
+	}
+}
+
+.btn {
+	@apply box-border border border-transparent focus:ring-4 shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none;
+}
+
+.btn-primary {
+	@apply text-white bg-primary hover:bg-primary-strong focus:ring-primary-medium;
+}
+
+.btn-secondary {
+	@apply text-body bg-neutral-secondary-medium border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-neutral-tertiary;
+}
+
+.btn-success {
+	@apply text-white bg-success hover:bg-success-strong focus:ring-success-medium;
+}
+
+.btn-danger {
+	@apply text-white bg-danger hover:bg-danger-strong focus:ring-danger-medium;
+}
