@@ -19,21 +19,21 @@
 }
 
 .btn {
-	@apply box-border border border-transparent focus:ring-4 shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none;
+	@apply box-border border border-transparent focus:ring-4 shadow-xs font-medium leading-5 rounded text-sm px-4 py-2.5 focus:outline-none;
 }
 
 .btn-primary {
-	@apply text-white bg-primary hover:bg-primary-strong focus:ring-primary-medium;
+	@apply text-white bg-blue-500 hover:bg-blue-700 focus:ring-blue-600;
 }
 
 .btn-secondary {
-	@apply text-body bg-neutral-secondary-medium border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-neutral-tertiary;
+	@apply text-white bg-gray-200 hover:bg-gray-400 focus:ring-gray-300;
 }
 
 .btn-success {
-	@apply text-white bg-success hover:bg-success-strong focus:ring-success-medium;
+	@apply text-white bg-green-500 hover:bg-green-700 focus:ring-green-600;
 }
 
 .btn-danger {
-	@apply text-white bg-danger hover:bg-danger-strong focus:ring-danger-medium;
+	@apply text-white bg-red-500 hover:bg-red-700 focus:ring-red-600;
 }
