@@ -46,7 +46,6 @@ export const video = mysqlTable(
 		filename: text('filename').notNull(),
 		fileSize: int('filesize').notNull(),
 		publicLink: varchar('public_link', { length: 36 })
-			.notNull()
 			.references(() => publicLink.id, { onDelete: 'cascade' }),
 		createdAt: timestamp('created_at', { fsp: 3 }).defaultNow().notNull(),
 		updatedAt: timestamp('updated_at', { fsp: 3 })

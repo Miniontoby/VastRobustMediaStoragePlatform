@@ -6,10 +6,21 @@
 	"actions.cancel": "Cancel",
 	"actions.okay": "Okay",
 
+	"answers.yes": "Yes",
+	"answers.no": "No",
+	"answers.maybe": "Maybe",
+
 	"pages.upload.title": "Upload Video",
 	"pages.upload.description": "Select a video file down below to upload it to the platform!",
 	"pages.upload.uploading.title": "Uploading...",
 	"pages.upload.uploading.description": "Video is being uploaded... {progress}%",
 	"pages.upload.uploaded.title": "Success!",
-	"pages.upload.uploaded.description": "Video is uploaded!"
+	"pages.upload.uploaded.description": "Video is uploaded!",
+
+	"pages.videos.title": "Videos",
+	"pages.videos.description": "View all your uploaded videos",
+	"pages.videos.table.name": "Filename",
+	"pages.videos.table.size": "Size",
+	"pages.videos.table.date": "Date",
+	"pages.videos.table.has_link": "Has Link?"
 }
