@@ -29,12 +29,13 @@ index 4410c92..77114c8 100644
  		"vite-plugin-devtools-json": "^1.0.0",
  		"vitest": "^4.1.4",
  		"vitest-browser-svelte": "^2.1.1"
-+	},
-+	"pnpm": {
-+		"supportedArchitectures": {
-+			"os": ["openbsd", "any"],
-+			"cpu": ["x64", "wasm32"],
-+			"libc": ["unknown", "any"]
+ 	},
+ 	"pnpm": {
+ 		"supportedArchitectures": {
+ 			"os": ["win32", "linux", "openbsd", "any"],
+ 			"cpu": ["x64", "wasm32"],
+ 			"libc": ["unknown", "any"]
+-		}
 +		},
 +		"overrides": {
 +			"rollup": "npm:@rollup/wasm-node",
@@ -52,6 +53,18 @@ pnpm install
 ```
 
 If it doesn't want to work, you can add `--force` at the end (`pnpm install --force`)
+
+
+## Initialize
+
+To initialize, you have to copy `.env.example` and name the new file `.env`
+
+Then go edit `.env` and fill in your database details, and the ORIGIN (e.g.: `https://yourdomain.com`) and fill in a secret key for auth.
+
+Then to initialize the database, you run this:
+```sh
+pnpm run db:push
+```
 
 
 ## Developing
