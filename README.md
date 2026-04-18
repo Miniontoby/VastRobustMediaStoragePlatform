@@ -63,6 +63,7 @@ Then go edit `.env` and fill in your database details, and the ORIGIN (e.g.: `ht
 
 Then to initialize the database, you run this:
 ```sh
+pnpm run db:generate
 pnpm run db:push
 ```
 
