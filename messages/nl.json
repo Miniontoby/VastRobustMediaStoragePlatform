@@ -1,15 +1,27 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from nl!",
+	"hello_world": "Hallo, {name} van nl!",
 
 	"actions.upload": "Uploaden",
 	"actions.cancel": "Annuleren",
 	"actions.okay": "Oké",
+
+	"answers.yes": "Ja",
+	"answers.no": "Nee",
+	"answers.maybe": "Misschien",
 
 	"pages.upload.title": "Video Uploaden",
 	"pages.upload.description": "Selecteer een video bestand hier beneden, om het te uploaden naar het platform!",
 	"pages.upload.uploading.title": "Uploaden...",
 	"pages.upload.uploading.description": "Video wordt geupload... {progress}%",
 	"pages.upload.uploaded.title": "Succes!",
-	"pages.upload.uploaded.description": "Video is geupload!"
+	"pages.upload.uploaded.description": "Video is geupload!",
+
+	"pages.videos.title": "Video's",
+	"pages.videos.description": "Bekijk al jouw geuploadde video's",
+	"pages.videos.table.name": "Bestandsnaam",
+	"pages.videos.table.size": "Grootte",
+	"pages.videos.table.date": "Datum",
+	"pages.videos.table.has_link": "Heeft Link?",
+	"pages.videos.action.generate_link": "Genereer Link"
 }
