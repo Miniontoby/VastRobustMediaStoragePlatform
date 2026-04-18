@@ -1,10 +1,10 @@
 import { json } from '@sveltejs/kit';
-import { createWriteStream, existsSync } from 'fs';
+import { createWriteStream } from 'fs';
 import { readFile, unlink, rmdir } from 'fs/promises';
 import path from 'path';
 import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db';
-import { upload } from '$lib/server/db/video.schema';
+import { upload, video } from '$lib/server/db/video.schema';
 import { eq } from 'drizzle-orm';
 
 const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
@@ -65,10 +65,17 @@ export const POST = async ({ params, locals }) => {
 		await db.update(upload).set({ status: 'done' }).where(eq(upload.id, uploadId));
 		// TODO:  remove upload from upload table and add file to the videos table of the user
 
-		return json({ done: true, filename: filename });
+		await db.insert(video).values({
+			id: uploadId,
+			userId,
+			filename,
+			fileSize: 0,
+		});
+
+		return json({ done: true, filename, uploadId });
 	} catch (err) {
 		writeStream.destroy();
 		await db.update(upload).set({ status: 'error' }).where(eq(upload.id, uploadId));
-		return json({ error: 'Finalization failed' }, { status: 500 });
+		return json({ error: 'Finalization failed', internal_error: err }, { status: 500 });
 	}
 };
