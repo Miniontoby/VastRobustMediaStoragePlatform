@@ -13,6 +13,8 @@ export const load = (event) => {
 
 export const actions = {
 	signInEmail: async (event) => {
+		if (!auth) return fail(500, { message: 'Unexpected error' });
+
 		const formData = await event.request.formData();
 		const email = formData.get('email')?.toString() ?? '';
 		const password = formData.get('password')?.toString() ?? '';
@@ -35,6 +37,8 @@ export const actions = {
 		return redirect(302, '/demo/better-auth');
 	},
 	signUpEmail: async (event) => {
+		if (!auth) return fail(500, { message: 'Unexpected error' });
+
 		const formData = await event.request.formData();
 		const email = formData.get('email')?.toString() ?? '';
 		const password = formData.get('password')?.toString() ?? '';

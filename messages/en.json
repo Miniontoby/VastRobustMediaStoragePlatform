@@ -1,4 +1,15 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from en!"
+	"hello_world": "Hello, {name} from en!",
+
+	"actions.upload": "Upload",
+	"actions.cancel": "Cancel",
+	"actions.okay": "Okay",
+
+	"pages.upload.title": "Upload Video",
+	"pages.upload.description": "Select a video file down below to upload it to the platform!",
+	"pages.upload.uploading.title": "Uploading...",
+	"pages.upload.uploading.description": "Video is being uploaded... {progress}%",
+	"pages.upload.uploaded.title": "Success!",
+	"pages.upload.uploaded.description": "Video is uploaded!"
 }

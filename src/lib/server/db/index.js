@@ -5,5 +5,5 @@ import { env } from '$env/dynamic/private';
 
 const client = !env.DATABASE_URL ? null : mysql.createPool(env.DATABASE_URL);
 
-export const db = !env.DATABASE_URL ? null : drizzle(client, { schema, mode: 'default' });
+export const db = !client ? null : drizzle(client, { schema, mode: 'default' });
 

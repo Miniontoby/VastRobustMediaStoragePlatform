@@ -14,8 +14,10 @@ import { paraglideMiddleware } from '$lib/paraglide/server';
 });
 
 /** @type {import('@sveltejs/kit').Handle} */ const handleBetterAuth = async ({ event, resolve }) => {
+	if (!auth) return resolve(event);
+
 	const session = await auth.api.getSession({
-		/** @type {import('@sveltejs/kit').Handle} */ headers: event.request.headers
+		headers: event.request.headers
 	});
 
 	if (session) {
