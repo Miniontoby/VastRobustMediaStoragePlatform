@@ -1,4 +1,4 @@
-import { base } from '$app/paths';
+import { resolve } from '$app/paths';
 
 /**
  * Initialise a file upload
@@ -13,7 +13,7 @@ export async function initUpload(file, totalChunks) {
 
 	let data;
 	try {
-		const response = await fetch(base + '/api/upload/init', { method: 'POST', body: form });
+		const response = await fetch(resolve('/api/upload/init'), { method: 'POST', body: form });
 		data = await response.json();
 	} catch (err) {
 		throw new Error('API_INIT_UPLOAD_FAILED', { cause: err });
@@ -46,7 +46,7 @@ export async function uploadChunk(file, uploadId, chunkIndex, totalChunks, chunk
 	form.append('chunk', chunk);
 
 	try {
-		await fetch(base + '/api/upload/chunk/' + uploadId, { method: 'POST', body: form });
+		await fetch(resolve('/api/upload/chunk/[uploadId=uuid]', { uploadId }), { method: 'POST', body: form });
 	} catch (err) {
 		throw new Error('API_CHUNK_UPLOAD_FAILED', { cause: err });
 	}
@@ -54,15 +54,14 @@ export async function uploadChunk(file, uploadId, chunkIndex, totalChunks, chunk
 
 /**
  * Finalize a file upload
- * @param {File} file - The full file being uploaded
  * @param {string} uploadId - Unique ID for this upload session
  * @returns {Promise<object>}
  */
-export async function finalizeUpload(file, uploadId) {
+export async function finalizeUpload(uploadId) {
 	const form = new FormData();
 
 	try {
-		const response = await fetch(base + '/api/upload/finalize/' + uploadId, { method: 'POST', body: form });
+		const response = await fetch(resolve('/api/upload/finalize/[uploadId=uuid]', { uploadId }), { method: 'POST', body: form });
 		return await response.json();
 	} catch (err) {
 		throw new Error('API_FINALIZE_UPLOAD_FAILED', { cause: err });
@@ -82,15 +81,11 @@ export async function uploadFile(file, progressCallback) {
 	const chunkSize = 200_000; // 200 kb?
 	const totalChunks = Math.ceil(fileSize / chunkSize);
 
-	try {
-		const uploadId = await initUpload(file, totalChunks);
-		for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-			await uploadChunk(file, uploadId, chunkIndex, totalChunks, chunkSize);
-			progressCallback(Math.round(chunkIndex / totalChunks * 100));
-		}
-
-		return await finalizeUpload(file, uploadId);
-	} catch (err) {
-		throw err; // Just pass it onto the frontend.
+	const uploadId = await initUpload(file, totalChunks);
+	for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+		await uploadChunk(file, uploadId, chunkIndex, totalChunks, chunkSize);
+		progressCallback(Math.round(chunkIndex / totalChunks * 100));
 	}
+
+	return await finalizeUpload(uploadId);
 }

@@ -22,5 +22,6 @@
 	"pages.videos.table.name": "Filename",
 	"pages.videos.table.size": "Size",
 	"pages.videos.table.date": "Date",
-	"pages.videos.table.has_link": "Has Link?"
+	"pages.videos.table.has_link": "Has Link?",
+	"pages.videos.action.generate_link": "Generate Link"
 }

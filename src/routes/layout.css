@@ -16,6 +16,24 @@
 		color: var(--color-blue-600);
 		text-decoration-line: underline;
 	}
+	table {
+		@apply w-full text-left table-auto min-w-max;
+	}
+	thead {
+		@apply block md:table-header-group;
+	}
+	tr {
+		@apply border border-gray-200 md:border-none block md:table-row;
+	}
+	tbody > tr {
+		@apply bg-gray-100;
+	}
+	th {
+		@apply p-2 text-left font-medium md:border md:border-gray-200 block md:table-cell;
+	}
+	td {
+		@apply p-2 md:border md:border-gray-200 block md:table-cell;
+	}
 }
 
 .btn {

@@ -1,15 +1,34 @@
 <script>
 	import { m } from '$lib/paraglide/messages.js';
-	import { resolveRoute } from '$app/paths';
+	import { resolve } from '$app/paths';
 
 	/** @type {import('./$types').PageData} */
-	export let data;
-	/** @type {object[]} */
-	const videos = $state(data.videos); // TODO change typescript type to the model of the Video thing instead.
+	// @ts-ignore
+	let { data } = $props();
+	/** @type {{
+		video: {
+			id: string;
+			userId: string;
+			filename: string;
+			fileSize: number;
+			createdAt: Date;
+			updatedAt: Date;
+		};
+		public_link: {
+			id: string;
+			videoId: string;
+			URL: string;
+			downloadingEnabled: boolean;
+			createdAt: Date;
+			updatedAt: Date;
+		} | null;
+	}[]} */
+	const videos = data.videos;
 </script>
 
 <h1>{m['pages.videos.title']()}</h1>
 <p>{m['pages.videos.description']()}</p>
+<p>Click <a href={resolve("/upload")}>here</a> if you need to upload a video</p>
 
 <table>
 	<thead>
@@ -21,12 +40,12 @@
 		</tr>
 	</thead>
 	<tbody>
-		{#each videos as video}
+		{#each videos as video (video.video.id)}
 			<tr>
-				<td><a href={resolveRoute('/videos/[id]', { id: String(video.id) })}>{video.name}</a></td>
-				<td>{video.size}</td>
-				<td>{video.createdAt}</td>
-				<td>{video.publicLink !== null ? m['answers.yes'] : m['answers.no']}</td>
+				<td><a href={resolve('/(uploader)/videos/[id]', { id: String(video.video.id) })}>{video.video.filename}</a></td>
+				<td>{video.video.fileSize}</td>
+				<td>{video.video.createdAt}</td>
+				<td>{video.public_link !== null ? m['answers.yes']() : m['answers.no']()}</td>
 			</tr>
 		{/each}
 	</tbody>
