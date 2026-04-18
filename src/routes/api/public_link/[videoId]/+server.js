@@ -30,16 +30,16 @@ export const POST = async ({ params, locals }) => {
 
 	const [session] = await db.select().from(publicLink).where(eq(publicLink.videoId, videoId)).limit(1);
 	if (session) {
-		return json({ error: 'Already has a public link' }, { status: 400 });
+		return json({ error: 'Already has a public link', ...session }, { status: 400 });
 	}
 
 	const linkId = randomUUID();
 
-	await db.insert(publicLink).values({
+	const data = await db.insert(publicLink).values({
 		id: linkId,
 		videoId,
 		URL: linkId,
 	});
 
-	return json({ linkId }, { status: 201 });
+	return json(data, { status: 201 });
 };

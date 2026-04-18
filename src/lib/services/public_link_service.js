@@ -3,7 +3,7 @@ import { resolve } from '$app/paths';
 /**
  * Create a public link
  * @param {string} videoId - Unique ID for this upload session
- * @returns {Promise<object>}
+ * @returns {Promise<{ id: string; videoId: string; URL: string; downloadingEnabled: boolean; createdAt: Date; updatedAt: Date; }>}
  */
 export async function createPublicLink(videoId) {
 	try {

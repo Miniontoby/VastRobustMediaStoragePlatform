@@ -22,13 +22,25 @@
 			updatedAt: Date;
 		} | null;
 	}} */
-	const { video, public_link } = data.video;
+	let { video } = data.video;
+	/** @type {{
+			id: string;
+			videoId: string;
+			URL: string;
+			downloadingEnabled: boolean;
+			createdAt: Date;
+			updatedAt: Date;
+		} | null
+	} */
+	let public_link = $state(data.video.public_link);
 
 	/** @param {MouseEvent & { currentTarget: EventTarget & HTMLButtonElement; }} event */
 	async function generateLink(event) {
 		event.preventDefault();
+		if (public_link !== null) return;
 
-		await createPublicLink(video.id);
+		// @ts-ignore
+		public_link = await createPublicLink(video.id);
 	}
 </script>
 
@@ -36,5 +48,5 @@
 <p>{video.fileSize}</p>
 
 <input type="text" class="w-full" value={public_link ? public_link.URL : "No link"} disabled>
-<button class="btn btn-primary" onclick={generateLink}>{m['pages.videos.action.generate_link']()}</button>
+<button class="btn btn-primary" onclick={generateLink} disabled={public_link !== null}>{m['pages.videos.action.generate_link']()}</button>
 
