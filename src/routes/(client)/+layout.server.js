@@ -1,7 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import { resolveRoute } from '$app/paths';
 
-export async function load({ parent, locals }) => {
+export async function load({ parent, locals }) {
 	const data = await parent();
 	if (!locals.user)
 		return redirect(303, resolveRoute('/demo/better-auth/login'));

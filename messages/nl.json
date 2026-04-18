@@ -15,7 +15,7 @@
 	"pages.upload.uploading.title": "Uploaden...",
 	"pages.upload.uploading.description": "Video wordt geupload... {progress}%",
 	"pages.upload.uploaded.title": "Succes!",
-	"pages.upload.uploaded.description": "Video is geupload!"
+	"pages.upload.uploaded.description": "Video is geupload!",
 
 	"pages.videos.title": "Video's",
 	"pages.videos.description": "Bekijk al jouw geuploadde video's",
