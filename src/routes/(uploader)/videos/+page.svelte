@@ -1,10 +1,9 @@
 <script>
 	import { m } from '$lib/paraglide/messages.js';
 	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 
-	/** @type {import('./$types').PageData} */
-	// @ts-ignore
-	let { data } = $props();
+	let { data } = page;
 	/** @type {{
 		video: {
 			id: string;

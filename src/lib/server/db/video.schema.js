@@ -10,6 +10,7 @@ export const upload = mysqlTable(
 			.notNull()
 			.references(() => user.id, { onDelete: 'cascade' }),
 		filename: text('filename').notNull(),
+		fileSize: int('filesize').notNull(),
 		totalChunks: int('total_chunks').notNull(),
 		receivedChunks: json('received_chunks').notNull().default([]),
 		status: varchar('status', { length: 20 }).notNull().default('pending'),

@@ -9,6 +9,7 @@ import { resolve } from '$app/paths';
 export async function initUpload(file, totalChunks) {
 	const form = new FormData();
 	form.append('filename', file.name ?? 'unknown.mp4');
+	form.append('fileSize', String(file.size));
 	form.append('totalChunks', String(totalChunks));
 
 	let data;
@@ -22,7 +23,7 @@ export async function initUpload(file, totalChunks) {
 	if (data?.uploadId !== undefined) {
 		return data.uploadId;
 	} else {
-		throw new Error('API_NO_UPLOAD_ID_RECEIVED', { cause: 'UNKNOWN' });
+		throw new Error('API_NO_UPLOAD_ID_RECEIVED', { cause: data.error });
 	}
 }
 
@@ -46,7 +47,8 @@ export async function uploadChunk(file, uploadId, chunkIndex, totalChunks, chunk
 	form.append('chunk', chunk);
 
 	try {
-		await fetch(resolve('/api/upload/chunk/[uploadId=uuid]', { uploadId }), { method: 'POST', body: form });
+		const response = await fetch(resolve('/api/upload/chunk/[uploadId=uuid]', { uploadId }), { method: 'POST', body: form });
+		if (!response.ok) throw new Error(await response.json().then(r => r.error))
 	} catch (err) {
 		throw new Error('API_CHUNK_UPLOAD_FAILED', { cause: err });
 	}
@@ -78,7 +80,7 @@ export async function uploadFile(file, progressCallback) {
 	if (!file) throw new Error('LIB_NO_FILE_TO_UPLOAD', { cause: 'USER_FAULT' });
 
 	const fileSize = file.size;
-	const chunkSize = 200_000; // 200 kb?
+	const chunkSize = 20_000_000; // 20.000 kb?
 	const totalChunks = Math.ceil(fileSize / chunkSize);
 
 	const uploadId = await initUpload(file, totalChunks);
