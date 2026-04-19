@@ -22,6 +22,7 @@ export const POST = async ({ request, locals }) => {
 
 	const formData = await request.formData();
 	const filename = String(formData.get('filename'));
+	const fileSize = Number(formData.get('fileSize'));
 	const totalChunks = Number(formData.get('totalChunks'));
 
 	if (!filename || isNaN(totalChunks)) {
@@ -37,6 +38,7 @@ export const POST = async ({ request, locals }) => {
 		id: uploadId,
 		userId,
 		filename,
+		fileSize,
 		totalChunks,
 		receivedChunks: [],
 		status: 'pending',

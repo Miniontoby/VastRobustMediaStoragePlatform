@@ -69,7 +69,7 @@ export const POST = async ({ params, locals }) => {
 			id: uploadId,
 			userId,
 			filename,
-			fileSize: 0,
+			fileSize: session.fileSize,
 		});
 
 		return json({ done: true, filename, uploadId });

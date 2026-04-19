@@ -8,9 +8,9 @@ export async function load({ locals, params, parent }) {
 	if (!db) return {};
 
 	const data = await parent();
-	const [videoRow] = await db.select().from(video)
-		.where(and(eq(video.userId, locals.user.id), eq(video.id, params.id)))
-		.leftJoin(publicLink, eq(video.id, publicLink.videoId));
+	const [videoRow] = await db.select().from(publicLink)
+		.where(and(eq(video.userId, locals.user.id), eq(publicLink.URL, params.publicLink)))
+		.leftJoin(video, eq(publicLink.videoId, video.id));
 	if (!videoRow) return error(404);
 
 	return {

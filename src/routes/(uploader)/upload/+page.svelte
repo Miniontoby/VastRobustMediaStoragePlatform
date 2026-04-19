@@ -1,10 +1,12 @@
 <script>
 	import { m } from '$lib/paraglide/messages.js';
+	import { resolve } from '$app/paths';
 	import { uploadFile } from '$lib/services/file_uploader_service.js';
 
 	let files = $state();
 	/** @type {Number|null} */
 	let progress = $state(null);
+	let uploadId = $state("");
 
 	/** @param {Number} percentage */
 	function updateProgressCallback(percentage) {
@@ -25,6 +27,7 @@
 			try {
 				const response = await uploadFile(file, updateProgressCallback);
 				console.log(response);
+				uploadId = response.uploadId
 				progress = 100;
 				// TODO Add message when done
 			} catch (e) {
@@ -68,6 +71,7 @@
 						<h3 id="dialog-title" class="mb-6">{m['pages.upload.uploaded.title']()}</h3>
 						<div class="mt-2">
 							<p class="text-sm text-gray-400">{m['pages.upload.uploaded.description']()}</p>
+							<p><a href={resolve("/(uploader)/videos/[id]", { id: uploadId })}>{uploadId}</a></p>
 						</div>
 						<div class="flex items-center space-x-4 justify-center">
 							<button type="button" class="btn btn-success" onclick={closePopup}>{m['actions.okay']()}</button>
@@ -86,3 +90,7 @@
 		</div>
 	</dialog>
 {/if}
+
+<style>
+	@reference "tailwindcss";
+</style>
