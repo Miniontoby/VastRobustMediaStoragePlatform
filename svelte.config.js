@@ -13,7 +13,24 @@ const config = {
 			return isExternalLibrary ? undefined : true;
 		}
 	},
-	kit: { adapter: adapter() }
+	kit: {
+		adapter: adapter(),
+		csp: {
+			directives: {
+				'script-src': ['self'],
+				'worker-src': ['self', 'blob:']
+			},
+			// must be specified with either the `report-uri` or `report-to` directives, or both
+			// reportOnly: {
+			// 	'script-src': ['self'],
+			// 	'worker-src': ['self', 'blob:'],
+			// 	'report-uri': ['/']
+			// }
+		},
+		csrf: {
+			trustedOrigins: []
+		}
+	}
 };
 
 export default config;

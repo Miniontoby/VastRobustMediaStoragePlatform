@@ -89,3 +89,10 @@ pnpm run build
 
 You can preview the production build with `pnpm run preview`.
 
+
+# Threat model mitigrations
+
+## Path traversal
+
+To avoid path traversal exploits during uploads, inside `src\routes\api\upload\finalize\[uploadId=uuid]\+server.js` we use the UUID as the filename instead of a user provided filename.
+The user provided filename is only used for the uploader to identify their files.
