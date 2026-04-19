@@ -21,6 +21,10 @@ export const POST = async ({ request, params, locals }) => {
 
 	const userId = locals.user.id;
 
+	const formData = await request.formData();
+	const chunkIndex = Number(formData.get('chunkIndex'));
+	const chunk = /** @type {File} */ (formData.get('chunk'));
+
 	const { uploadId } = params;
 
 	const [session] = await db.select().from(upload).where(eq(upload.id, uploadId)).limit(1);
@@ -37,10 +41,6 @@ export const POST = async ({ request, params, locals }) => {
 	if (!existsSync(uploadPath)) {
 		return json({ error: 'Upload directory missing, re-init required' }, { status: 400 });
 	}
-
-	const formData = await request.formData();
-	const chunkIndex = Number(formData.get('chunkIndex'));
-	const chunk = /** @type {File} */ (formData.get('chunk'));
 
 	if (isNaN(chunkIndex) || !chunk) {
 		return json({ error: 'Missing chunkIndex or chunk' }, { status: 400 });
