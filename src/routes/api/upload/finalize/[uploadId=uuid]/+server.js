@@ -12,11 +12,49 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
 /**
  * Finalizes an upload by concatenating all chunks into the final file.
  * @type {import('./$types').RequestHandler}
+ * @swagger
+ * /api/upload/finalize/{uploadId}:
+ *   post:
+ *     summary: Finalize a video file upload
+ *     tags:
+ *       - Uploads
+ *     parameters:
+ *       - in: path
+ *         name: uploadId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 done:
+ *                   description: Done?
+ *                   type: boolean
+ *                 filename:
+ *                   description: Filename
+ *                   type: string
+ *                 uploadId:
+ *                   description: Upload ID
+ *                   type: string
+ *       400:
+ *         description: Not all chunks received
+ *       403:
+ *         description: Not logged in
+ *       404:
+ *         description: Unknown upload ID
+ *       500:
+ *         description: Finalization error
  */
 export const POST = async ({ params, locals }) => {
 	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });
 
-	if (!locals.user) return json({ error: 'Not logged in' }, { status: 400 });
+	if (!locals.user) return json({ error: 'Not logged in' }, { status: 403 });
 
 	const userId = locals.user.id;
 
