@@ -10,13 +10,10 @@ import { eq } from 'drizzle-orm';
 const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
 
 /**
- * Uploads a single chunk for the given uploadId.
- * Expects multipart/form-data with: chunkIndex, totalChunks, chunk
- * @type {import('./$types').RequestHandler}
  * @swagger
  * /api/upload/chunk/{uploadId}:
  *   post:
- *     summary: Upload a chunk of a video file to an uploadId
+ *     summary: Uploads a single chunk for the given uploadId.
  *     tags:
  *       - Uploads
  *     parameters:
@@ -60,6 +57,7 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  *         description: Not logged in
  *       404:
  *         description: Unknown upload ID
+ * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ request, params, locals }) => {
 	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });

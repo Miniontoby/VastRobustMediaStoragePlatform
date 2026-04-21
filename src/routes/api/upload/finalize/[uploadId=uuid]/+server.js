@@ -10,12 +10,10 @@ import { eq } from 'drizzle-orm';
 const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
 
 /**
- * Finalizes an upload by concatenating all chunks into the final file.
- * @type {import('./$types').RequestHandler}
  * @swagger
  * /api/upload/finalize/{uploadId}:
  *   post:
- *     summary: Finalize a video file upload
+ *     summary: Finalizes an upload session by concatenating all chunks into the final file.
  *     tags:
  *       - Uploads
  *     parameters:
@@ -42,6 +40,7 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  *                 uploadId:
  *                   description: Upload ID
  *                   type: string
+ *                   format: uuid
  *       400:
  *         description: Not all chunks received
  *       403:
@@ -50,6 +49,7 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  *         description: Unknown upload ID
  *       500:
  *         description: Finalization error
+ * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ params, locals }) => {
 	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });

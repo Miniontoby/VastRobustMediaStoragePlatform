@@ -4,12 +4,10 @@ import { upload } from '$lib/server/db/video.schema';
 import { eq } from 'drizzle-orm';
 
 /**
- * Returns the current status of an upload session.
- * @type {import('./$types').RequestHandler}
  * @swagger
- * /api/upload/status/[uploadId]:
+ * /api/upload/status/{uploadId}:
  *   get:
- *     summary: Get the status of a video file upload
+ *     summary: Returns the current status of an upload session.
  *     tags:
  *       - Uploads
  *     parameters:
@@ -18,6 +16,7 @@ import { eq } from 'drizzle-orm';
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
  *     responses:
  *       200:
  *         description: Found upload
@@ -29,6 +28,7 @@ import { eq } from 'drizzle-orm';
  *                 uploadId:
  *                   description: Upload ID
  *                   type: string
+ *                   format: uuid
  *                 status:
  *                   description: Status
  *                   type: string
@@ -53,6 +53,7 @@ import { eq } from 'drizzle-orm';
  *         description: Not logged in
  *       404:
  *         description: Unknown upload ID
+ * @type {import('./$types').RequestHandler}
  */
 export const GET = async ({ params, locals }) => {
 	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });

@@ -9,13 +9,10 @@ import { upload } from '$lib/server/db/video.schema';
 const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
 
 /**
- * Initializes an upload session.
- * Must be called before any chunk uploads.
- * @type {import('./$types').RequestHandler}
  * @swagger
  * /api/upload/init:
  *   post:
- *     summary: Initialize a new video upload
+ *     summary: Initializes an upload session. Must be called before any chunk uploads
  *     tags:
  *       - Uploads
  *     requestBody:
@@ -54,6 +51,7 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  *         description: Missing parameters
  *       403:
  *         description: Not logged in
+ * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ request, locals }) => {
 	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });

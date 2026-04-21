@@ -10,6 +10,9 @@ import { stat } from 'fs/promises';
 
 const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
 
+/**
+ * @type {import('./$types').RequestHandler}
+ */
 export const GET = async({ request, params }) => {
 	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });
 
@@ -67,8 +70,7 @@ export const GET = async({ request, params }) => {
 }
 
 /**
- * Initializes an upload session.
- * Must be called before any chunk uploads.
+ * Creates a new public link for the provided videoId
  * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ params, locals }) => {
