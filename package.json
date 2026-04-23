@@ -60,6 +60,8 @@
 		"storybook": "^10.3.5",
 		"svelte": "^5.55.4",
 		"svelte-check": "^4.4.6",
+		"sveltekit-openapi-generator": "^0.1.5",
+		"swagger-ui-dist": "^5.32.4",
 		"tailwindcss": "^4.2.2",
 		"typescript": "^6.0.3",
 		"vite": "^7.3.2",
@@ -86,6 +88,9 @@
 				"unknown",
 				"any"
 			]
+		},
+		"patchedDependencies": {
+			"sveltekit-openapi-generator": "patches/sveltekit-openapi-generator.patch"
 		}
 	}
 }

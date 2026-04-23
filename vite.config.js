@@ -1,5 +1,6 @@
 /// <reference types="vitest/config" />
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
+import openapiPlugin from 'sveltekit-openapi-generator';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
@@ -12,7 +13,7 @@ const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(file
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [tailwindcss(), sveltekit(), devtoolsJson(), paraglideVitePlugin({
+  plugins: [tailwindcss(), openapiPlugin(), sveltekit(), devtoolsJson(), paraglideVitePlugin({
     project: './project.inlang',
     outdir: './src/lib/paraglide'
   })],

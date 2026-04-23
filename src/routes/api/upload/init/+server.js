@@ -9,14 +9,54 @@ import { upload } from '$lib/server/db/video.schema';
 const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
 
 /**
- * Initializes an upload session.
- * Must be called before any chunk uploads.
+ * @swagger
+ * /api/upload/init:
+ *   post:
+ *     summary: Initializes an upload session. Must be called before any chunk uploads
+ *     tags:
+ *       - Uploads
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - filename
+ *               - fileSize
+ *               - totalChunks
+ *             properties:
+ *               filename:
+ *                 description: Filename
+ *                 type: string
+ *               fileSize:
+ *                 description: File size
+ *                 type: number
+ *               totalChunks:
+ *                 description: Total chunks
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 uploadId:
+ *                   description: Upload ID
+ *                   type: string
+ *                   format: uuid
+ *       400:
+ *         description: Missing parameters
+ *       403:
+ *         description: Not logged in
  * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ request, locals }) => {
 	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });
 
-	if (!locals.user) return json({ error: 'Not logged in' }, { status: 400 });
+	if (!locals.user) return json({ error: 'Not logged in' }, { status: 403 });
 
 	const userId = locals.user.id;
 
