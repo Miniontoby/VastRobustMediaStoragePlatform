@@ -88,6 +88,9 @@
 				"unknown",
 				"any"
 			]
+		},
+		"patchedDependencies": {
+			"sveltekit-openapi-generator": "patches/sveltekit-openapi-generator.patch"
 		}
 	}
 }
