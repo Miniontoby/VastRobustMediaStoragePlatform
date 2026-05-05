@@ -6,11 +6,23 @@
 	let files = $state();
 	/** @type {Number|null} */
 	let progress = $state(null);
+	/** @type {string|null} */
+	let step = $state(null);
 	let uploadId = $state("");
 
 	/** @param {Number} percentage */
 	function updateProgressCallback(percentage) {
+		if (step !== 'uploading') step = 'uploading';
 		progress = percentage;
+		if (progress === 100) {
+			console.log('We should practically be done...');
+		}
+	}
+
+	/** @param {{ percent: number, eta: number | null }} progress */
+	function hlsProgressCallback({ percent: number, eta: number | null }) {
+		step = 'processing: ' + String(eta);
+		progress = percent;
 		if (progress === 100) {
 			console.log('We should practically be done...');
 		}
@@ -25,9 +37,9 @@
 			progress = 0;
 			const file = files[0];
 			try {
-				const response = await uploadFile(file, updateProgressCallback);
+				const response = await uploadFile(file, updateProgressCallback, hlsProgressCallback);
 				console.log(response);
-				uploadId = response.uploadId
+				uploadId = response.videoId
 				progress = 100;
 				// TODO Add message when done
 			} catch (e) {

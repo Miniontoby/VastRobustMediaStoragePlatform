@@ -28,7 +28,7 @@
 		if (response?.error !== undefined) {
 			error = response.error;
 		} else if (response?.data !== undefined) {
-			public_link.URL = response.linkId;
+			public_link.URL = response.data.URL;
 		}
 	}
 </script>

@@ -74,9 +74,10 @@ export async function finalizeUpload(uploadId) {
  * Run the full upload sequence
  * @param {File} file - The full file being uploaded
  * @param {(progress: Number) => void} progressCallback - A function callback for status updates
- * @returns {Promise<object>}
+ * @param {(progress: { percent: number, eta: number | null }) => void} hlsProgressCallback
+ * @returns {Promise<{ videoId: string }>}
  */
-export async function uploadFile(file, progressCallback) {
+export async function uploadFile(file, progressCallback, hlsProgressCallback) {
 	if (!file) throw new Error('LIB_NO_FILE_TO_UPLOAD', { cause: 'USER_FAULT' });
 
 	const fileSize = file.size;
@@ -89,5 +90,30 @@ export async function uploadFile(file, progressCallback) {
 		progressCallback(Math.round(chunkIndex / totalChunks * 100));
 	}
 
-	return await finalizeUpload(uploadId);
+	const data = await finalizeUpload(uploadId);
+
+	if (!data?.processing) throw new Error('API_FINALIZE_FAILED', { cause: data?.error });
+
+	return new Promise((res, rej) => {
+		const sse = new EventSource(resolve('/api/upload/finalize/[uploadId=uuid]', { uploadId }));
+
+		sse.onmessage = (e) => {
+			const msg = JSON.parse(e.data);
+
+			if (msg.type === 'progress') {
+				hlsProgressCallback({ percent: msg.percent, eta: msg.eta });
+			} else if (msg.type === 'done') {
+				sse.close();
+				res({ videoId: msg.videoId });
+			} else if (msg.type === 'error') {
+				sse.close();
+				rej(new Error('API_HLS_PROCESSING_FAILED', { cause: msg.message }));
+			}
+		};
+
+		sse.onerror = (e) => {
+			sse.close();
+			rej(new Error('API_SSE_CONNECTION_FAILED', { cause: e }));
+		};
+	});
 }

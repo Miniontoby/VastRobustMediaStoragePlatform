@@ -53,16 +53,18 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  *                   type: number
  *       400:
  *         description: Missing parameters, or missing upload folder or finished upload
- *       403:
- *         description: Not logged in
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Unknown upload ID
  * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ request, params, locals }) => {
-	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });
+	if (!db)
+		return json({ error: 'Unexpected error' }, { status: 500 });
 
-	if (!locals.user) return json({ error: 'Not logged in' }, { status: 403 });
+	if (!locals.user)
+		return json({ error: 'Unauthorized' }, { status: 401 });
 
 	const userId = locals.user.id;
 
@@ -74,31 +76,26 @@ export const POST = async ({ request, params, locals }) => {
 
 	const [session] = await db.select().from(upload).where(eq(upload.id, uploadId)).limit(1);
 
-	if (!session || session.userId !== userId) {
+	if (!session || session.userId !== userId)
 		return json({ error: 'Unknown uploadId, call /api/upload/init first' }, { status: 404 });
-	}
 
-	if (session.status === 'done' || session.status === 'finalizing') {
+	if (session.status === 'done' || session.status === 'finalizing')
 		return json({ error: 'Upload already finalized' }, { status: 400 });
-	}
 
 	const uploadPath = path.join(UPLOAD_DIR, uploadId);
-	if (!existsSync(uploadPath)) {
+	if (!existsSync(uploadPath))
 		return json({ error: 'Upload directory missing, re-init required' }, { status: 400 });
-	}
 
-	if (isNaN(chunkIndex) || !chunk) {
+	if (isNaN(chunkIndex) || !chunk)
 		return json({ error: 'Missing chunkIndex or chunk' }, { status: 400 });
-	}
 
 	const chunkBuffer = Buffer.from(await chunk.arrayBuffer());
 	const chunkPath = path.join(uploadPath, `${chunkIndex}.part`);
 	await writeFile(chunkPath, chunkBuffer);
 
 	const receivedChunks = /** @type {number[]} */ JSON.parse(String(session.receivedChunks));
-	if (!receivedChunks.includes(chunkIndex)) {
+	if (!receivedChunks.includes(chunkIndex))
 		receivedChunks.push(chunkIndex);
-	}
 
 	await db.update(upload)
 		.set({ receivedChunks, status: 'uploading' })

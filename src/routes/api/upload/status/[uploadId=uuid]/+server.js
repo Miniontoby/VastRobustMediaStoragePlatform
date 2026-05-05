@@ -32,7 +32,7 @@ import { eq } from 'drizzle-orm';
  *                 status:
  *                   description: Status
  *                   type: string
- *                   enum: ["pending", "uploading", "finalizing", "done", "error"]
+ *                   enum: ["pending", "uploading", "finalizing", "processing", "error"]
  *                 filename:
  *                   description: Filename
  *                   type: string
@@ -49,8 +49,8 @@ import { eq } from 'drizzle-orm';
  *                   type: array
  *                   items:
  *                     type: number
- *       403:
- *         description: Not logged in
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Unknown upload ID
  * @type {import('./$types').RequestHandler}
@@ -58,7 +58,7 @@ import { eq } from 'drizzle-orm';
 export const GET = async ({ params, locals }) => {
 	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });
 
-	if (!locals.user) return json({ error: 'Not logged in' }, { status: 403 });
+	if (!locals.user) return json({ error: 'Unauthorized' }, { status: 401 });
 
 	const userId = locals.user.id;
 
@@ -66,9 +66,8 @@ export const GET = async ({ params, locals }) => {
 
 	const [session] = await db.select().from(upload).where(eq(upload.id, uploadId)).limit(1);
 
-	if (!session || session.userId !== userId) {
+	if (!session || session.userId !== userId)
 		return json({ error: 'Unknown uploadId' }, { status: 404 });
-	}
 
 	const receivedChunks = /** @type {number[]} */ JSON.parse(String(session.receivedChunks));
 	const missingChunks = Array.from(
