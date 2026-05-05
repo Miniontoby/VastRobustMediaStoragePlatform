@@ -14,6 +14,8 @@
 	"pages.upload.description": "Selecteer een video bestand hier beneden, om het te uploaden naar het platform!",
 	"pages.upload.uploading.title": "Uploaden...",
 	"pages.upload.uploading.description": "Video wordt geupload... {progress}%",
+	"pages.upload.processing.title": "Verwerken... tijd over: {eta}",
+	"pages.upload.processing.description": "Video wordt verwerkt... {progress}%",
 	"pages.upload.uploaded.title": "Succes!",
 	"pages.upload.uploaded.description": "Video is geupload!",
 

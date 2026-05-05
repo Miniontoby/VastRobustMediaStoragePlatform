@@ -52,6 +52,7 @@
 		"eslint-plugin-storybook": "^10.3.5",
 		"eslint-plugin-svelte": "^3.17.0",
 		"globals": "^17.5.0",
+		"hls.js": "^1.6.16",
 		"mysql2": "^3.22.1",
 		"playwright": "^1.59.1",
 		"prettier": "^3.8.3",
@@ -60,7 +61,7 @@
 		"storybook": "^10.3.5",
 		"svelte": "^5.55.4",
 		"svelte-check": "^4.4.6",
-		"sveltekit-openapi-generator": "^0.1.5",
+		"sveltekit-openapi-generator": "^0.1.6",
 		"swagger-ui-dist": "^5.32.4",
 		"tailwindcss": "^4.2.2",
 		"typescript": "^6.0.3",
@@ -73,6 +74,12 @@
 		"#index.css": "./src/routes/layout.css"
 	},
 	"pnpm": {
+		"onlyBuiltDependencies": [
+			"@prisma/client",
+			"@scarf/scarf",
+			"better-sqlite3",
+			"esbuild"
+		],
 		"supportedArchitectures": {
 			"os": [
 				"win32",
@@ -88,9 +95,6 @@
 				"unknown",
 				"any"
 			]
-		},
-		"patchedDependencies": {
-			"sveltekit-openapi-generator": "patches/sveltekit-openapi-generator.patch"
 		}
 	}
 }

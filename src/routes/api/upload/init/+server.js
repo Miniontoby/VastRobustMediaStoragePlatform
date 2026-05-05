@@ -49,14 +49,16 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  *                   format: uuid
  *       400:
  *         description: Missing parameters
- *       403:
- *         description: Not logged in
+ *       401:
+ *         description: Unauthorized
  * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ request, locals }) => {
-	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });
+	if (!db)
+		return json({ error: 'Unexpected error' }, { status: 500 });
 
-	if (!locals.user) return json({ error: 'Not logged in' }, { status: 403 });
+	if (!locals.user)
+		return json({ error: 'Unauthorized' }, { status: 401 });
 
 	const userId = locals.user.id;
 
@@ -65,9 +67,8 @@ export const POST = async ({ request, locals }) => {
 	const fileSize = Number(formData.get('fileSize'));
 	const totalChunks = Number(formData.get('totalChunks'));
 
-	if (!filename || isNaN(totalChunks)) {
+	if (!filename || isNaN(totalChunks))
 		return json({ error: 'Missing filename or totalChunks' }, { status: 400 });
-	}
 
 	const uploadId = randomUUID();
 	const uploadPath = path.join(UPLOAD_DIR, uploadId);

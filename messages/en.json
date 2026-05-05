@@ -14,6 +14,8 @@
 	"pages.upload.description": "Select a video file down below to upload it to the platform!",
 	"pages.upload.uploading.title": "Uploading...",
 	"pages.upload.uploading.description": "Video is being uploaded... {progress}%",
+	"pages.upload.processing.title": "Processing... time left: {eta}",
+	"pages.upload.processing.description": "Video is being processed... {progress}%",
 	"pages.upload.uploaded.title": "Success!",
 	"pages.upload.uploaded.description": "Video is uploaded!",
 

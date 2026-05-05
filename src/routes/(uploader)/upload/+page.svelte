@@ -6,11 +6,25 @@
 	let files = $state();
 	/** @type {Number|null} */
 	let progress = $state(null);
+	/** @type {string|null} */
+	let step = $state(null);
+	let etaString = $state("");
 	let uploadId = $state("");
 
 	/** @param {Number} percentage */
 	function updateProgressCallback(percentage) {
+		if (step !== 'uploading') step = 'uploading';
 		progress = percentage;
+		if (progress === 100) {
+			console.log('We should practically be done...');
+		}
+	}
+
+	/** @param {{ percent: number, eta: number|null }} progress */
+	function hlsProgressCallback({ percent, eta }) {
+		if (step !== 'processing') step = 'processing';
+		progress = percent;
+		etaString = eta ? String(eta) : "UNKNOWN";
 		if (progress === 100) {
 			console.log('We should practically be done...');
 		}
@@ -25,9 +39,9 @@
 			progress = 0;
 			const file = files[0];
 			try {
-				const response = await uploadFile(file, updateProgressCallback);
+				const response = await uploadFile(file, updateProgressCallback, hlsProgressCallback);
 				console.log(response);
-				uploadId = response.uploadId
+				uploadId = response.videoId
 				progress = 100;
 				// TODO Add message when done
 			} catch (e) {
@@ -77,9 +91,17 @@
 							<button type="button" class="btn btn-success" onclick={closePopup}>{m['actions.okay']()}</button>
 						</div>
 					{:else}
-						<h3 id="dialog-title" class="mb-6">{m['pages.upload.uploading.title']()}</h3>
+						{#if step === 'processing'}
+							<h3 id="dialog-title" class="mb-6">{m['pages.upload.processing.title']({ eta: etaString })}</h3>
+						{:else}
+							<h3 id="dialog-title" class="mb-6">{m['pages.upload.uploading.title']()}</h3>
+						{/if}
 						<div class="mt-2">
-							<p class="text-sm text-gray-400">{m['pages.upload.uploading.description']({ progress: String(progress) })}</p>
+							{#if step === 'processing'}
+								<p class="text-sm text-gray-400">{m['pages.upload.processing.description']({ progress: String(progress) })}</p>
+							{:else}
+								<p class="text-sm text-gray-400">{m['pages.upload.uploading.description']({ progress: String(progress) })}</p>
+							{/if}
 						</div>
 						<div class="flex items-center space-x-4 justify-center">
 							<button type="button" class="btn btn-danger" onclick={cancelUpload}>{m['actions.cancel']()}</button>
@@ -90,7 +112,3 @@
 		</div>
 	</dialog>
 {/if}
-
-<style>
-	@reference "tailwindcss";
-</style>

@@ -32,6 +32,7 @@ export const video = mysqlTable(
 			.references(() => user.id, { onDelete: 'cascade' }),
 		filename: text('filename').notNull(),
 		fileSize: int('filesize').notNull(),
+		duration: int('duration'),
 		createdAt: timestamp('created_at', { fsp: 3 }).defaultNow().notNull(),
 		updatedAt: timestamp('updated_at', { fsp: 3 })
 			.defaultNow()

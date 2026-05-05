@@ -14,23 +14,21 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  * @type {import('./$types').RequestHandler}
  */
 export const GET = async({ request, params }) => {
-	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });
+	if (!db)
+		return json({ error: 'Unexpected error' }, { status: 500 });
 
 	const { videoId } = params;
 
-	if (!videoId) {
+	if (!videoId)
 		return json({ error: 'Missing videoId' }, { status: 400 });
-	}
 
 	const [session] = await db.select().from(publicLink).where(eq(publicLink.videoId, videoId)).limit(1);
-	if (!session) {
+	if (!session)
 		return json({ error: 'File does not exist' }, { status: 404 });
-	}
 
-	const filePath = path.join(UPLOAD_DIR, session.videoId + ".mp4");
-	if (!existsSync(filePath)) {
+	const filePath = path.join(UPLOAD_DIR, session.videoId + '.mp4');
+	if (!existsSync(filePath))
 		return json({ error: 'File is missing, re-init required' }, { status: 400 });
-	}
 
 	const fstat = await stat(filePath);
 	const total = fstat.size;
@@ -70,32 +68,71 @@ export const GET = async({ request, params }) => {
 }
 
 /**
- * Creates a new public link for the provided videoId
+ * @swagger
+ * /api/public_link/{videoId}:
+ *   post:
+ *     summary: Creates a new public link for the provided videoId
+ *     tags:
+ *       - Public Link
+ *     parameters:
+ *       - in: path
+ *         name: videoId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       201:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 linkId:
+ *                   description: Link ID
+ *                   type: string
+ *                   format: uuid
+ *                 data:
+ *                   description: Data
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       description: Link ID
+ *                       type: string
+ *                       format: uuid
+ *                     videoId:
+ *                       description: Video ID
+ *                       type: string
+ *                     URL:
+ *                       description: URL
+ *                       type: string
+ *       400:
+ *         description: There is already a public link
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Unknown video ID
  * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ params, locals }) => {
-	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });
+	if (!db)
+		return json({ error: 'Unexpected error' }, { status: 500 });
 
-	if (!locals.user) return json({ error: 'Not logged in' }, { status: 400 });
+	if (!locals.user)
+		return json({ error: 'Unauthorized' }, { status: 401 });
 
 	const userId = locals.user.id;
 
 	const { videoId } = params;
 
-	if (!videoId) {
-		return json({ error: 'Missing videoId' }, { status: 400 });
-	}
-
 	const [videoSession] = await db.select().from(video).where(eq(video.id, videoId)).limit(1);
-
-	if (!videoSession || videoSession.userId !== userId) {
+	if (!videoSession || videoSession.userId !== userId)
 		return json({ error: 'Unknown videoId' }, { status: 404 });
-	}
 
 	const [session] = await db.select().from(publicLink).where(eq(publicLink.videoId, videoId)).limit(1);
-	if (session) {
-		return json({ error: 'Already has a public link', ...session }, { status: 400 });
-	}
+	if (session)
+		return json({ error: 'Already has a public link', linkId: session.id, data: session }, { status: 400 });
 
 	const linkId = randomUUID();
 
@@ -105,5 +142,5 @@ export const POST = async ({ params, locals }) => {
 		URL: linkId,
 	});
 
-	return json({ data, linkId }, { status: 201 });
+	return json({ linkId, data }, { status: 201 });
 };
