@@ -64,20 +64,22 @@ export const GET = async ({ params, locals }) => {
 	if (!session || session.userId !== locals.user.id)
 		return json({ error: 'Unknown uploadId' }, { status: 404 });
 
-	let send = /** @type {(data: string) => void} */ (null);
+	let send = /** @type {((data: string) => void)|null} */ (null);
 
 	const stream = new ReadableStream({
 		start(controller) {
 			send = (data) => controller.enqueue(encoder.encode(data));
 
 			if (!sseClients.has(uploadId)) sseClients.set(uploadId, new Set());
-			sseClients.get(uploadId).add(send);
+			sseClients.get(uploadId)?.add(send);
 
 			// Send initial status
 			send(`data: ${JSON.stringify({ type: 'connected' })}\n\n`);
 		},
 		cancel() {
-			sseClients.get(uploadId)?.delete(send);
+			if (send !== null) {
+				sseClients.get(uploadId)?.delete(send);
+			}
 			if (sseClients.get(uploadId)?.size === 0) sseClients.delete(uploadId);
 		},
 	});
@@ -189,7 +191,7 @@ export const POST = async ({ params, locals }) => {
 			try {
 				broadcast(uploadId, { type: 'progress', percent: 0, eta: null });
 
-				const { hlsPath, duration } = await processHLS(finalPath, uploadId, (progress) => {
+				const { duration } = await processHLS(finalPath, uploadId, (progress) => {
 					broadcast(uploadId, { type: 'progress', ...progress });
 				});
 

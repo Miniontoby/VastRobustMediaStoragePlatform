@@ -54,6 +54,8 @@ pnpm install
 
 If it doesn't want to work, you can add `--force` at the end (`pnpm install --force`)
 
+You must also install ffmpeg and add it to PATH or put it inside the folder of the software.
+
 
 ## Initialize
 

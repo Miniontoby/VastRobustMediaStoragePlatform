@@ -20,7 +20,7 @@
 	}
 
 	/** @param {{ percent: number, eta: number | null }} progress */
-	function hlsProgressCallback({ percent: number, eta: number | null }) {
+	function hlsProgressCallback({ percent, eta }) {
 		step = 'processing: ' + String(eta);
 		progress = percent;
 		if (progress === 100) {
