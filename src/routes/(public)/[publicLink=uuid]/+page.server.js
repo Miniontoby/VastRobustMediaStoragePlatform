@@ -4,12 +4,12 @@ import { error } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
 
 /** @type {import('./$types').PageServerLoad} */
-export async function load({ locals, params, parent }) {
+export async function load({ params, parent }) {
 	if (!db) return {};
 
 	const data = await parent();
 	const [videoRow] = await db.select().from(publicLink)
-		.where(and(eq(video.userId, locals.user.id), eq(publicLink.URL, params.publicLink)))
+		.where(and(eq(publicLink.URL, params.publicLink)))
 		.leftJoin(video, eq(publicLink.videoId, video.id));
 	if (!videoRow) return error(404);
 

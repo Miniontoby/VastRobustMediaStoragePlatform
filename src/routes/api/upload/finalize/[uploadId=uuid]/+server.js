@@ -115,12 +115,9 @@ export const GET = async ({ params, locals }) => {
  *             schema:
  *               type: object
  *               properties:
- *                 done:
- *                   description: Done?
+ *                 processing:
+ *                   description: Processing?
  *                   type: boolean
- *                 filename:
- *                   description: Filename
- *                   type: string
  *                 uploadId:
  *                   description: Upload ID
  *                   type: string
@@ -195,7 +192,8 @@ export const POST = async ({ params, locals }) => {
 					broadcast(uploadId, { type: 'progress', ...progress });
 				});
 
-				await unlink(finalPath);
+				// Do not delete original file, as processHLS does some optimizations. Original file will be used to download
+				// await unlink(finalPath);
 
 				await db.insert(video).values({
 					id: uploadId,

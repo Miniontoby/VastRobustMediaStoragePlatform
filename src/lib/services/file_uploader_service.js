@@ -57,7 +57,7 @@ export async function uploadChunk(file, uploadId, chunkIndex, totalChunks, chunk
 /**
  * Finalize a file upload
  * @param {string} uploadId - Unique ID for this upload session
- * @returns {Promise<object>}
+ * @returns {Promise<{ processing: boolean|undefined; uploadId: string|undefined; error: string|undefined; internal_error: string|undefined }>}
  */
 export async function finalizeUpload(uploadId) {
 	const form = new FormData();
@@ -74,7 +74,7 @@ export async function finalizeUpload(uploadId) {
  * Run the full upload sequence
  * @param {File} file - The full file being uploaded
  * @param {(progress: Number) => void} progressCallback - A function callback for status updates
- * @param {(progress: { percent: number, eta: number | null }) => void} hlsProgressCallback
+ * @param {(progress: { percent: number, eta: number|null }) => void} hlsProgressCallback
  * @returns {Promise<{ videoId: string }>}
  */
 export async function uploadFile(file, progressCallback, hlsProgressCallback) {

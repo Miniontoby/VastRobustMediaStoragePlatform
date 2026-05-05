@@ -21,7 +21,10 @@ export async function processHLS(inputPath, videoId, onProgress) {
 
 		const ff = spawn('ffmpeg', [
 			'-i', inputPath,
-			'-codec:', 'copy',
+			'-c:v', 'libx264',
+			'-preset', 'fast',
+			'-crf', '18',
+			'-c:a', 'aac',
 			'-start_number', '0',
 			'-hls_time', '10',
 			'-hls_list_size', '0',
