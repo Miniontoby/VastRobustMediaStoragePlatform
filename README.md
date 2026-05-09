@@ -22,28 +22,21 @@ This is needed because these packages do not provide direct support for OpenBSD.
 Save the following code into `fix_openbsd.patch` file and then run `git apply fix_openbsd.patch`
 ```patch
 diff --git a/package.json b/package.json
-index 4410c92..77114c8 100644
+index c66eba2..8d20d0d 100644
 --- a/package.json
 +++ b/package.json
-@@ -66,5 +66,18 @@
- 		"vite-plugin-devtools-json": "^1.0.0",
- 		"vitest": "^4.1.4",
- 		"vitest-browser-svelte": "^2.1.1"
- 	},
- 	"pnpm": {
- 		"supportedArchitectures": {
- 			"os": ["win32", "linux", "openbsd", "any"],
- 			"cpu": ["x64", "wasm32"],
- 			"libc": ["unknown", "any"]
--		}
-+		},
-+		"overrides": {
-+			"rollup": "npm:@rollup/wasm-node",
-+			"@parcel/watcher": "npm:@parcel/watcher-wasm",
-+			"lightningcss": "npm:lightningcss-wasm",
-+			"@tailwindcss/oxide": "npm:@tailwindcss/oxide-wasm32-wasi"
-+		}
- 	}
+@@ -97,7 +97,11 @@
+                        ]
+                },
+                "overrides": {
+-                       "better-call": ">=1.3.5"
++                       "better-call": ">=1.3.5",
++                       "rollup": "npm:@rollup/wasm-node",
++                       "@parcel/watcher": "npm:@parcel/watcher-wasm",
++                       "lightningcss": "npm:lightningcss-wasm",
++                       "@tailwindcss/oxide": "npm:@tailwindcss/oxide-wasm32-wasi"
+                }
+        }
  }
 ```
 

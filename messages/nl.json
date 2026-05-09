@@ -25,5 +25,6 @@
 	"pages.videos.table.size": "Grootte",
 	"pages.videos.table.date": "Datum",
 	"pages.videos.table.has_link": "Heeft Link?",
-	"pages.videos.action.generate_link": "Genereer Link"
+	"pages.videos.action.generate_link": "Genereer Link",
+	"pages.videos.action.grant_access": "Toegang verlenen"
 }

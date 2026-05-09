@@ -4,6 +4,7 @@ import { mkdir } from 'fs/promises';
 import path from 'path';
 import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db';
+import { auth } from '$lib/server/auth';
 import { upload } from '$lib/server/db/video.schema';
 
 const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
@@ -49,16 +50,26 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  *         description: Missing parameters
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ request, locals }) => {
-	if (!db)
-		return json({ error: 'Unexpected error' }, { status: 500 });
+	if (!db || !auth)
+		return json({ error: 'Service Unavailable' }, { status: 503 });
 
 	if (!locals.user)
 		return json({ error: 'Unauthorized' }, { status: 401 });
-
+	
 	const userId = locals.user.id;
+	const permissionsResponse = await auth.api.userHasPermission({
+		body: {
+			userId,
+			permissions: { video: ['upload'] }
+		},
+	});
+	if (!permissionsResponse.success)
+		return json({ error: 'Forbidden' }, { status: 403 });
 
 	const formData = await request.formData();
 	const filename = String(formData.get('filename'));

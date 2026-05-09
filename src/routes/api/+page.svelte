@@ -1,12 +1,13 @@
-<!-- src/routes/docs/+page.svelte -->
-<script lang="ts">
+<script>
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { dev } from '$app/environment';
 	import 'swagger-ui-dist/swagger-ui.css';
 
-	let containerElement: HTMLElement | undefined;
-	let spec: any = $state();
+	/** @type {HTMLElement | undefined} */
+	let containerElement;
+	/** @type {any} */
+	let spec = $state();
 
 	// Get the current server URL reactively
 	let currentOrigin = $derived(page.url.origin);
@@ -31,13 +32,13 @@
 				// @ts-ignore - virtual import may not exist in all environments
 				const virtualSpec = await import('virtual:openapi-spec');
 				spec = virtualSpec?.default ?? virtualSpec;
-			} catch (e) {
+			} catch {
 				// Fallback: fetch the openapi spec from the dev middleware
 				try {
 					const res = await fetch('/openapi-spec.json');
 					if (res.ok) spec = await res.json();
 					else spec = { openapi: '3.0.0', info: { title: 'API' }, paths: {} };
-				} catch (fetchErr) {
+				} catch {
 					spec = { openapi: '3.0.0', info: { title: 'API' }, paths: {} };
 				}
 			}

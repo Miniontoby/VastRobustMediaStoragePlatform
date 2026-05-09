@@ -12,7 +12,8 @@ export const load = async (event) => {
 
 export const actions = {
 	signOut: async (event) => {
-		if (!auth) return fail(500, { message: 'Unexpected error' });
+		if (!auth)
+			return fail(503, { message: 'Service Unavailable' });
 
 		await auth.api.signOut({
 			headers: event.request.headers

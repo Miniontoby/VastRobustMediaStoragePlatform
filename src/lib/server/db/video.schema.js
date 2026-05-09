@@ -20,7 +20,7 @@ export const upload = mysqlTable(
 			.$onUpdate(() => /* @__PURE__ */ new Date())
 			.notNull(),
 	},
-	(table) => [index("upload_userId_idx").on(table.userId)],
+	(table) => [index('upload_userId_idx').on(table.userId)],
 );
 
 export const video = mysqlTable(
@@ -39,7 +39,20 @@ export const video = mysqlTable(
 			.$onUpdate(() => /* @__PURE__ */ new Date())
 			.notNull(),
 	},
-	(table) => [index("video_userId_idx").on(table.userId)],
+	(table) => [index('video_userId_idx').on(table.userId)],
+);
+
+export const videoAccess = mysqlTable(
+	'video_access',
+	{
+		userId: varchar("user_id", { length: 255 })
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		videoId: varchar("video_id", { length: 36 })
+			.notNull()
+			.references(() => video.id, { onDelete: 'cascade' }),
+	},
+	(table) => [index('videoAccess_user_video_idx').on(table.userId, table.videoId)],
 );
 
 export const publicLink = mysqlTable(
@@ -57,7 +70,7 @@ export const publicLink = mysqlTable(
 			.$onUpdate(() => /* @__PURE__ */ new Date())
 			.notNull(),
 	},
-	(table) => [index("publicLink_video_idx").on(table.videoId)],
+	(table) => [index('publicLink_video_idx').on(table.videoId)],
 );
 
 export const uploadRelations = relations(upload, ({ one }) => ({
@@ -70,6 +83,17 @@ export const uploadRelations = relations(upload, ({ one }) => ({
 export const videoRelations = relations(video, ({ one }) => ({
 	user: one(user, {
 		fields: [video.userId],
+		references: [user.id],
+	}),
+}));
+
+export const videoAccessRelations = relations(videoAccess, ({ one }) => ({
+	video: one(video, {
+		fields: [videoAccess.videoId],
+		references: [video.id],
+	}),
+	user: one(user, {
+		fields: [videoAccess.userId],
 		references: [user.id],
 	}),
 }));

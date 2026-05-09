@@ -8,6 +8,13 @@
       "when": 1777977867123,
       "tag": "0000_many_namora",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1778333522002,
+      "tag": "0001_wide_lenny_balinger",
+      "breakpoints": true
     }
   ]
 }

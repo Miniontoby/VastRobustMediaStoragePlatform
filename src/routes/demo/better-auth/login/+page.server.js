@@ -1,6 +1,4 @@
 import { fail, redirect } from '@sveltejs/kit';
-
-
 import { auth } from '$lib/server/auth';
 import { APIError } from 'better-auth/api';
 
@@ -13,7 +11,8 @@ export const load = async (event) => {
 
 export const actions = {
 	signInEmail: async (event) => {
-		if (!auth) return fail(500, { message: 'Unexpected error' });
+		if (!auth)
+			return fail(503, { message: 'Service Unavailable' });
 
 		const formData = await event.request.formData();
 		const email = formData.get('email')?.toString() ?? '';
@@ -37,7 +36,9 @@ export const actions = {
 		return redirect(302, '/demo/better-auth');
 	},
 	signUpEmail: async (event) => {
-		if (!auth) return fail(500, { message: 'Unexpected error' });
+		if (!auth)
+			return fail(503, { message: 'Service Unavailable' });
+		const isFirst = (await auth.api.listUsers()).total === 0;
 
 		const formData = await event.request.formData();
 		const email = formData.get('email')?.toString() ?? '';
@@ -50,7 +51,32 @@ export const actions = {
 					email,
 					password,
 					name,
-					callbackURL: '/auth/verification-success'
+					callbackURL: '/auth/verification-success',
+					// @ts-ignore
+					role: isFirst ? 'admin' : 'user', // Give the first user admin rights
+				}
+			});
+		} catch (error) {
+			if (error instanceof APIError) {
+				return fail(400, { message: error.message || 'Registration failed' });
+			}
+			return fail(500, { message: 'Unexpected error' });
+		}
+
+		return redirect(302, '/demo/better-auth');
+	},
+	resetPassword: async (event) => {
+		if (!auth)
+			return fail(503, { message: 'Service Unavailable' });
+
+		const formData = await event.request.formData();
+		const email = formData.get('email')?.toString() ?? '';
+
+		try {
+			await auth.api.requestPasswordReset({
+				body: {
+					email,
+					redirectTo: '/demo/better-auth/reset-password',
 				}
 			});
 		} catch (error) {

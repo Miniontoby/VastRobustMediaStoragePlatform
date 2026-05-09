@@ -1,21 +1,29 @@
 import { json } from '@sveltejs/kit';
 import { randomUUID } from 'crypto';
-import { createReadStream, existsSync } from 'fs';
-import path from 'path';
-import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db';
+import { auth } from '$lib/server/auth';
 import { video, publicLink } from '$lib/server/db/video.schema';
 import { eq } from 'drizzle-orm';
-import { stat } from 'fs/promises';
-
-const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
 
 /**
  * @type {import('./$types').RequestHandler}
  */
-export const GET = async({ request, params }) => {
-	if (!db)
+export const GET = async({ params, locals }) => {
+	if (!db || !auth)
 		return json({ error: 'Unexpected error' }, { status: 500 });
+
+	if (!locals.user)
+		return json({ error: 'Unauthorized' }, { status: 401 });
+
+	const userId = locals.user.id;
+	const permissionsResponse = await auth.api.userHasPermission({
+		body: {
+			userId,
+			permissions: { public_link: ['view'] }
+		},
+	});
+	if (!permissionsResponse.success)
+		return json({ error: 'Forbidden' }, { status: 403 });
 
 	const { videoId } = params;
 
@@ -26,45 +34,7 @@ export const GET = async({ request, params }) => {
 	if (!session)
 		return json({ error: 'File does not exist' }, { status: 404 });
 
-	const filePath = path.join(UPLOAD_DIR, session.videoId + '.mp4');
-	if (!existsSync(filePath))
-		return json({ error: 'File is missing, re-init required' }, { status: 400 });
-
-	const fstat = await stat(filePath);
-	const total = fstat.size;
-
-	const range = request.headers.get('range');
-	if (range) { // && range !== "bytes=0-") {
-		const [startStr, endStr] = range.replace(/bytes=/, '').split('-');
-		const start = parseInt(startStr, 10);
-		let end = endStr ? parseInt(endStr, 10) : total - 1;
-		if (isNaN(end)) end = total - 1;
-		const chunkSize = end - start + 1;
-
-		// @ts-ignore
-		return new Response(createReadStream(filePath, { start, end }), {
-			status: 206,
-			headers: {
-				'Content-Type': 'video/mp4',
-				'Content-Range': `bytes ${start}-${end}/${total}`,
-				'Accept-Range': 'bytes',
-				'Content-Length': String(chunkSize),
-				'Cache-Control': 'no-store',
-				'Content-Disposition': 'inline',
-			}
-		})
-	}
-
-	// @ts-ignore
-	return new Response(createReadStream(filePath), {
-		headers: {
-			'Content-Type': 'video/mp4',
-			'Content-Length': String(total),
-			'Accept-Range': 'bytes',
-			'Cache-Control': 'no-store',
-			'Content-Disposition': 'inline',
-		}
-	})
+	return json({ id: session.id, videoId: session.videoId, URL: session.URL, downloadingEnabled: session.downloadingEnabled }, { status: 200 });
 }
 
 /**
@@ -106,6 +76,7 @@ export const GET = async({ request, params }) => {
  *                     videoId:
  *                       description: Video ID
  *                       type: string
+ *                       format: uuid
  *                     URL:
  *                       description: URL
  *                       type: string
@@ -142,18 +113,28 @@ export const GET = async({ request, params }) => {
  *                       type: string
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Unknown video ID
  * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ params, locals }) => {
-	if (!db)
-		return json({ error: 'Unexpected error' }, { status: 500 });
+	if (!db || !auth)
+		return json({ error: 'Service Unavailable' }, { status: 503 });
 
 	if (!locals.user)
 		return json({ error: 'Unauthorized' }, { status: 401 });
 
 	const userId = locals.user.id;
+	const permissionsResponse = await auth.api.userHasPermission({
+		body: {
+			userId,
+			permissions: { public_link: ['create'] }
+		},
+	});
+	if (!permissionsResponse.success)
+		return json({ error: 'Forbidden' }, { status: 403 });
 
 	const { videoId } = params;
 
