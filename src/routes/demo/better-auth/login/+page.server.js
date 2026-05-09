@@ -46,16 +46,25 @@ export const actions = {
 		const name = formData.get('name')?.toString() ?? '';
 
 		try {
-			await auth.api.signUpEmail({
-				body: {
-					email,
-					password,
-					name,
-					callbackURL: '/auth/verification-success',
-					// @ts-ignore
-					role: isFirst ? 'admin' : 'user', // Give the first user admin rights
-				}
-			});
+			if (isFirst) {
+				await auth.api.createUser({
+					body: {
+						email,
+						password,
+						name,
+						role: 'admin'
+					}
+				});
+			} else {
+				await auth.api.signUpEmail({
+					body: {
+						email,
+						password,
+						name,
+						callbackURL: '/auth/verification-success',
+					}
+				});
+			}
 		} catch (error) {
 			if (error instanceof APIError) {
 				return fail(400, { message: error.message || 'Registration failed' });

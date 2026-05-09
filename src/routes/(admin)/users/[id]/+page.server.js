@@ -1,9 +1,9 @@
 import { resolve } from '$app/paths';
 import { auth } from '$lib/server/auth';
 import { db } from '$lib/server/db';
-import { video, publicLink, videoAccess } from '$lib/server/db/video.schema';
+import { user } from '$lib/server/db/auth.schema';
 import { error, redirect } from '@sveltejs/kit';
-import { and, eq, exists, or } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ locals, params, parent }) {
@@ -18,7 +18,7 @@ export async function load({ locals, params, parent }) {
 		body: {
 			userId,
 			permissions: {
-				file: ['watch'],
+				user: ['get'],
 			}
 		},
 	});
@@ -26,32 +26,21 @@ export async function load({ locals, params, parent }) {
 		return error(403, 'Forbidden');
 
 	const data = await parent();
-	const [videoRow] = await db.select().from(video)
-		.where(
-			and(
-				eq(video.id, params.id),
-				or(
-					eq(video.userId, userId), // Is the uploader
-					exists( // has specific access
-						db.select()
-						.from(videoAccess)
-						.where(
-							and(
-								eq(videoAccess.videoId, video.id),
-								eq(videoAccess.userId, userId)
-							)
-						)
-					)
-				),
-			)
-		)
-		.leftJoin(publicLink, eq(video.id, publicLink.videoId))
-		.limit(1);
-	if (!videoRow) return error(404);
+	const [userRow] = await db.select({
+		id: user.id,
+		name: user.name,
+		email: user.email,
+		emailVerified: user.emailVerified,
+		createdAt: user.createdAt,
+		role: user.role,
+		banned: user.banned,
+		banReason: user.banReason,
+		banExpires: user.banExpires,
+	}).from(user).where(eq(user.id, params.id)).limit(1);
+	if (!userRow) return error(404);
 
 	return {
 		...data,
-		videoRow,
-		isOwner: videoRow.video.userId === userId
+		userRow,
 	};
 }
