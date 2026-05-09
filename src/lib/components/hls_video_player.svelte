@@ -11,7 +11,7 @@
 	/** @type {Hls|undefined} */
 	let hls;
 
-	const manifestUrl = resolve("/api/video/[videoId]/manifest.m3u8", { videoId }) + (token ? `?token=${token}` : '');
+	const manifestUrl = $derived(resolve("/api/video/[videoId]/manifest.m3u8", { videoId }) + (token ? `?token=${token}` : ''));
 
 	onMount(() => {
 		if (Hls.isSupported()) {

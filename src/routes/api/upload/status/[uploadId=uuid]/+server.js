@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
+import { auth } from '$lib/server/auth';
 import { upload } from '$lib/server/db/video.schema';
 import { eq } from 'drizzle-orm';
 
@@ -52,16 +53,28 @@ import { eq } from 'drizzle-orm';
  *                     type: number
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Unknown upload ID
  * @type {import('./$types').RequestHandler}
  */
 export const GET = async ({ params, locals }) => {
-	if (!db) return json({ error: 'Unexpected error' }, { status: 500 });
+	if (!db || !auth)
+		return json({ error: 'Service Unavailable' }, { status: 503 });
 
-	if (!locals.user) return json({ error: 'Unauthorized' }, { status: 401 });
-
+	if (!locals.user)
+		return json({ error: 'Unauthorized' }, { status: 401 });
+	
 	const userId = locals.user.id;
+	const permissionsResponse = await auth.api.userHasPermission({
+		body: {
+			userId,
+			permissions: { video: ['upload'] }
+		},
+	});
+	if (!permissionsResponse.success)
+		return json({ error: 'Forbidden' }, { status: 403 });
 
 	const { uploadId } = params;
 

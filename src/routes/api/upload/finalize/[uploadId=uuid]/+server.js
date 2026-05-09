@@ -4,6 +4,7 @@ import { readFile, unlink, rmdir } from 'fs/promises';
 import path from 'path';
 import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db';
+import { auth } from '$lib/server/auth';
 import { upload, video } from '$lib/server/db/video.schema';
 import { processHLS } from '$lib/server/hls';
 import { eq } from 'drizzle-orm';
@@ -71,32 +72,69 @@ function broadcast(uploadId, data) {
  *                           type: integer
  *                           nullable: true
  *                           description: Estimated time left in seconds. Null when unknown
+ *                     - properties:
+ *                         type:
+ *                           type: string
+ *                           const: 'done'
+ *                           description: Done message type
+ *                         uploadId:
+ *                           type: string
+ *                           format: uuid
+ *                     - properties:
+ *                         type:
+ *                           type: string
+ *                           const: 'error'
+ *                           description: Error message type
+ *                         message:
+ *                           type: string
+ *                           description: Error message
+ *                           enum: ["HLS processing failed"]
  *             examples:
  *               connected:
- *                 summary: Message when connected to the EventStream
+ *                 summary: Message when sucessfully connected to the EventStream
  *                 value: |
  *                   data: {"type": "connected"}
  *               processing:
  *                 summary: Message when a processing update is sent
  *                 value: |
  *                   data: {"type": "processing", "progress": 12, "eta": 120}
+ *               done:
+ *                 summary: Message when processing is done
+ *                 value: |
+ *                   data: {"type": "done", "uploadId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"}
+ *               error:
+ *                 summary: Message when processing has failed
+ *                 value: |
+ *                   data: {"type": "error", "message": "HLS processing failed"}
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Unknown upload ID
  * @type {import('./$types').RequestHandler}
  */
 export const GET = async ({ params, locals }) => {
-	if (!db)
-		return json({ error: 'Unexpected error' }, { status: 500 });
+	if (!db || !auth)
+		return json({ error: 'Service Unavailable' }, { status: 503 });
 
 	if (!locals.user)
 		return json({ error: 'Unauthorized' }, { status: 401 });
+	
+	const userId = locals.user.id;
+	const permissionsResponse = await auth.api.userHasPermission({
+		body: {
+			userId,
+			permissions: { video: ['upload'] }
+		},
+	});
+	if (!permissionsResponse.success)
+		return json({ error: 'Forbidden' }, { status: 403 });
 
 	const { uploadId } = params;
 
 	const [session] = await db.select().from(upload).where(eq(upload.id, uploadId)).limit(1);
-	if (!session || session.userId !== locals.user.id)
+	if (!session || session.userId !== userId)
 		return json({ error: 'Unknown uploadId' }, { status: 404 });
 
 	let send = /** @type {((data: string) => void)|null} */ (null);
@@ -162,6 +200,8 @@ export const GET = async ({ params, locals }) => {
  *         description: Not all chunks received
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Unknown upload ID
  *       500:
@@ -169,13 +209,21 @@ export const GET = async ({ params, locals }) => {
  * @type {import('./$types').RequestHandler}
  */
 export const POST = async ({ params, locals }) => {
-	if (!db)
-		return json({ error: 'Unexpected error' }, { status: 500 });
+	if (!db || !auth)
+		return json({ error: 'Service Unavailable' }, { status: 503 });
 
 	if (!locals.user)
 		return json({ error: 'Unauthorized' }, { status: 401 });
-
+	
 	const userId = locals.user.id;
+	const permissionsResponse = await auth.api.userHasPermission({
+		body: {
+			userId: userId,
+			permissions: { video: ['upload'] }
+		},
+	});
+	if (!permissionsResponse.success)
+		return json({ error: 'Forbidden' }, { status: 403 });
 
 	const { uploadId } = params;
 

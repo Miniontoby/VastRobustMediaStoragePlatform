@@ -2,7 +2,7 @@ import { resolve } from '$app/paths';
 
 /**
  * Create a public link
- * @param {string} videoId - Unique ID for this upload session
+ * @param {string} videoId - Unique ID for this video
  * @returns {Promise<{ error: string|undefined; data: { id: string; videoId: string; URL: string; downloadingEnabled: boolean; createdAt: Date; updatedAt: Date; }|undefined }>}
  */
 export async function createPublicLink(videoId) {

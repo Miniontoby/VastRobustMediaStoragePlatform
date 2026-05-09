@@ -100,7 +100,9 @@ export async function uploadFile(file, progressCallback, hlsProgressCallback) {
 		sse.onmessage = (e) => {
 			const msg = JSON.parse(e.data);
 
-			if (msg.type === 'progress') {
+			if (msg.type === 'connected') {
+				// We're listening
+			} else if (msg.type === 'progress') {
 				hlsProgressCallback({ percent: msg.percent, eta: msg.eta });
 			} else if (msg.type === 'done') {
 				sse.close();
