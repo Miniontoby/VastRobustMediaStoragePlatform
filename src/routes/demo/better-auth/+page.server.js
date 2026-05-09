@@ -3,11 +3,11 @@ import { fail, redirect } from '@sveltejs/kit';
 
 import { auth } from '$lib/server/auth';
 
-export const load = (event) => {
+export const load = async (event) => {
 	if (!event.locals.user) {
 		return redirect(302, '/demo/better-auth/login');
 	}
-	return { user: event.locals.user };
+	return { ...(await event.parent()), user: event.locals.user };
 };
 
 export const actions = {

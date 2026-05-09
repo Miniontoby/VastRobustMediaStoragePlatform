@@ -30,7 +30,7 @@ function broadcast(uploadId, data) {
  * @swagger
  * /api/upload/finalize/{uploadId}:
  *   get:
- *     summary: Get access to the EvenStream for the HLS processing status of an upload session.
+ *     summary: Get access to the EventStream for the HLS processing status of an upload session.
  *     tags:
  *       - Uploads
  *     parameters:
@@ -42,9 +42,44 @@ function broadcast(uploadId, data) {
  *           format: uuid
  *     responses:
  *       200:
- *         description: EventStream
+ *         description: EventStream for status
  *         content:
- *           text/event-stream
+ *           text/event-stream:
+ *             schema:
+ *               type: object
+ *               required: [data]
+ *               properties:
+ *                 data:
+ *                   contentMediaType: application/json
+ *                   type: object
+ *                   required: [type]
+ *                   oneOf:
+ *                     - properties:
+ *                         type:
+ *                           type: string
+ *                           const: 'connected'
+ *                           description: Connected message type
+ *                     - properties:
+ *                         type:
+ *                           type: string
+ *                           const: 'processing'
+ *                           description: Processing message type
+ *                         percent:
+ *                           type: integer
+ *                           description: Progress in percentages
+ *                         eta:
+ *                           type: integer
+ *                           nullable: true
+ *                           description: Estimated time left in seconds. Null when unknown
+ *             examples:
+ *               connected:
+ *                 summary: Message when connected to the EventStream
+ *                 value: |
+ *                   data: {"type": "connected"}
+ *               processing:
+ *                 summary: Message when a processing update is sent
+ *                 value: |
+ *                   data: {"type": "processing", "progress": 12, "eta": 120}
  *       401:
  *         description: Unauthorized
  *       404:
@@ -114,6 +149,7 @@ export const GET = async ({ params, locals }) => {
  *           application/json:
  *             schema:
  *               type: object
+ *               required: [processing, uploadId]
  *               properties:
  *                 processing:
  *                   description: Processing?

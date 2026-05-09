@@ -21,10 +21,7 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  *         application/x-www-form-urlencoded:
  *           schema:
  *             type: object
- *             required:
- *               - filename
- *               - fileSize
- *               - totalChunks
+ *             required: [filename, fileSize, totalChunks]
  *             properties:
  *               filename:
  *                 description: Filename
@@ -42,6 +39,7 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  *           application/json:
  *             schema:
  *               type: object
+ *               required: [uploadId]
  *               properties:
  *                 uploadId:
  *                   description: Upload ID

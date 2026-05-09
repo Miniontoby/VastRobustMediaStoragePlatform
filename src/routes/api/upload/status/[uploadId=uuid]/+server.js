@@ -24,6 +24,7 @@ import { eq } from 'drizzle-orm';
  *           application/json:
  *             schema:
  *               type: object
+ *               required: [uploadId, status, filename, totalChunks, receivedChunks, missingChunks]
  *               properties:
  *                 uploadId:
  *                   description: Upload ID
