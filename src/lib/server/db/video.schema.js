@@ -47,10 +47,10 @@ export const videoAccess = mysqlTable(
 	{
 		userId: varchar("user_id", { length: 255 })
 			.notNull()
-			.references(() => user.id),
+			.references(() => user.id, { onDelete: 'cascade' }),
 		videoId: varchar("video_id", { length: 36 })
 			.notNull()
-			.references(() => video.id),
+			.references(() => video.id, { onDelete: 'cascade' }),
 	},
 	(table) => [index('videoAccess_user_video_idx').on(table.userId, table.videoId)],
 );

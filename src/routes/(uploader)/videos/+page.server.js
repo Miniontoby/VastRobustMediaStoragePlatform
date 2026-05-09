@@ -1,7 +1,7 @@
 import { resolve } from '$app/paths';
 import { auth } from '$lib/server/auth';
 import { db } from '$lib/server/db';
-import { video, publicLink } from '$lib/server/db/video.schema';
+import { video, publicLink, videoAccess } from '$lib/server/db/video.schema';
 import { error, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 
@@ -27,9 +27,13 @@ export async function load({ parent, locals }) {
 	const videos = await db.select().from(video)
 		.where(eq(video.userId, userId))
 		.leftJoin(publicLink, eq(video.id, publicLink.videoId));
+	const sharedVideos = await db.select().from(videoAccess)
+		.where(eq(videoAccess.userId, userId))
+		.rightJoin(video, eq(video.id, videoAccess.videoId));
 
 	return {
 		...data,
-		videos
+		videos,
+		sharedVideos
 	};
 }
