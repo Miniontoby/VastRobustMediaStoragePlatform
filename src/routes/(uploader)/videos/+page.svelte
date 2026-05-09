@@ -38,34 +38,37 @@
 
 <h1>{m['pages.videos.title']()}</h1>
 <p>{m['pages.videos.description']()}</p>
-<p>Click <a href={resolve('/upload')}>here</a> if you need to upload a video</p>
 
-<table>
-	<thead>
-		<tr>
-			<th>{m['pages.videos.table.name']()}</th>
-			<th>{m['pages.videos.table.size']()}</th>
-			<th>{m['pages.videos.table.date']()}</th>
-			<th>{m['pages.videos.table.has_link']()}</th>
-		</tr>
-	</thead>
-	<tbody>
-		{#each videos as video (video.video.id)}
+{#if data.hasPermissions}
+	<p>Click <a href={resolve('/upload')}>here</a> if you need to upload a video</p>
+
+	<table>
+		<thead>
 			<tr>
-				<td>
-					<a href={resolve('/(uploader)/videos/[id]', { id: String(video.video.id) })}>
-						{video.video.filename}
-					</a>
-				</td>
-				<td>{video.video.fileSize}</td>
-				<td>{video.video.createdAt}</td>
-				<td>{video.public_link !== null ? m['answers.yes']() : m['answers.no']()}</td>
+				<th>{m['pages.videos.table.name']()}</th>
+				<th>{m['pages.videos.table.size']()}</th>
+				<th>{m['pages.videos.table.date']()}</th>
+				<th>{m['pages.videos.table.has_link']()}</th>
 			</tr>
-		{/each}
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			{#each videos as video (video.video.id)}
+				<tr>
+					<td>
+						<a href={resolve('/(uploader)/videos/[id]', { id: String(video.video.id) })}>
+							{video.video.filename}
+						</a>
+					</td>
+					<td>{video.video.fileSize}</td>
+					<td>{video.video.createdAt}</td>
+					<td>{video.public_link !== null ? m['answers.yes']() : m['answers.no']()}</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+	<br />
+{/if}
 
-<br />
 <h2>Videos shared with you</h2>
 <table>
 	<thead>

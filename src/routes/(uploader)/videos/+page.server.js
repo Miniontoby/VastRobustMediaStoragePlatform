@@ -20,8 +20,19 @@ export async function load({ parent, locals }) {
 			permissions: { video: ['list'] }
 		},
 	});
-	if (!permissionsResponse.success)
-		return error(403, 'Forbidden');
+	let hasPermissions = true;
+	if (!permissionsResponse.success) {
+		const permissionsResponse2 = await auth.api.userHasPermission({
+			body: {
+				userId,
+				permissions: { file: ['watch'] }
+			},
+		});
+		if (!permissionsResponse2.success)
+			return error(403, 'Forbidden');
+
+		hasPermissions = false;
+	}
 
 	const data = await parent();
 	const videos = await db.select().from(video)
@@ -34,6 +45,7 @@ export async function load({ parent, locals }) {
 	return {
 		...data,
 		videos,
-		sharedVideos
+		sharedVideos,
+		hasPermissions
 	};
 }
