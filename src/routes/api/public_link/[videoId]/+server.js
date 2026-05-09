@@ -88,6 +88,7 @@ export const GET = async({ request, params }) => {
  *           application/json:
  *             schema:
  *               type: object
+ *               required: [linkId, data]
  *               properties:
  *                 linkId:
  *                   description: Link ID
@@ -96,6 +97,7 @@ export const GET = async({ request, params }) => {
  *                 data:
  *                   description: Data
  *                   type: object
+ *                   required: [id, videoId, URL]
  *                   properties:
  *                     id:
  *                       description: Link ID
@@ -109,6 +111,35 @@ export const GET = async({ request, params }) => {
  *                       type: string
  *       400:
  *         description: There is already a public link
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required: [error, linkId, data]
+ *               properties:
+ *                 error:
+ *                   description: Error message
+ *                   type: string
+ *                   enum: ["Already has a public link"]
+ *                 linkId:
+ *                   description: Link ID
+ *                   type: string
+ *                   format: uuid
+ *                 data:
+ *                   description: Data
+ *                   type: object
+ *                   required: [id, videoId, URL]
+ *                   properties:
+ *                     id:
+ *                       description: Link ID
+ *                       type: string
+ *                       format: uuid
+ *                     videoId:
+ *                       description: Video ID
+ *                       type: string
+ *                     URL:
+ *                       description: URL
+ *                       type: string
  *       401:
  *         description: Unauthorized
  *       404:
@@ -132,15 +163,15 @@ export const POST = async ({ params, locals }) => {
 
 	const [session] = await db.select().from(publicLink).where(eq(publicLink.videoId, videoId)).limit(1);
 	if (session)
-		return json({ error: 'Already has a public link', linkId: session.id, data: session }, { status: 400 });
+		return json({ error: 'Already has a public link', linkId: session.id, data: { id: session.id, videoId: session.videoId, URL: session.URL } }, { status: 400 });
 
 	const linkId = randomUUID();
-
-	const data = await db.insert(publicLink).values({
+	const data = {
 		id: linkId,
 		videoId,
 		URL: linkId,
-	});
+	};
+	await db.insert(publicLink).values(data);
 
 	return json({ linkId, data }, { status: 201 });
 };

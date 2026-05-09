@@ -5,7 +5,7 @@ import path from 'path';
 import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db';
 import { upload } from '$lib/server/db/video.schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
 
@@ -29,13 +29,13 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  *         application/x-www-form-urlencoded:
  *           schema:
  *             type: object
- *             required:
- *               - filename
- *               - fileSize
- *               - totalChunks
+ *             required: [chunkIndex, totalChunks, chunk]
  *             properties:
  *               chunkIndex:
  *                 description: Chunk index
+ *                 type: number
+ *               totalChunks:
+ *                 description: Total chunk count
  *                 type: number
  *               chunk:
  *                 description: Chunk data
@@ -47,6 +47,7 @@ const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
  *           application/json:
  *             schema:
  *               type: object
+ *               required: [received]
  *               properties:
  *                 received:
  *                   description: Received chunk index
@@ -70,11 +71,12 @@ export const POST = async ({ request, params, locals }) => {
 
 	const formData = await request.formData();
 	const chunkIndex = Number(formData.get('chunkIndex'));
+	const totalChunks = Number(formData.get('totalChunks'));
 	const chunk = /** @type {File} */ (formData.get('chunk'));
 
 	const { uploadId } = params;
 
-	const [session] = await db.select().from(upload).where(eq(upload.id, uploadId)).limit(1);
+	const [session] = await db.select().from(upload).where(and(eq(upload.id, uploadId), eq(upload.totalChunks, totalChunks))).limit(1);
 
 	if (!session || session.userId !== userId)
 		return json({ error: 'Unknown uploadId, call /api/upload/init first' }, { status: 404 });
@@ -99,7 +101,7 @@ export const POST = async ({ request, params, locals }) => {
 
 	await db.update(upload)
 		.set({ receivedChunks, status: 'uploading' })
-		.where(eq(upload.id, uploadId));
+		.where(and(eq(upload.id, uploadId), eq(upload.totalChunks, totalChunks)));
 
 	return json({ received: chunkIndex }, { status: 201 });
 };
