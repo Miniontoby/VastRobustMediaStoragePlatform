@@ -11,6 +11,12 @@ import grantVideoAccess from '$lib/server/grant-video-access';
  *     summary: Grants video access to a certain user
  *     tags:
  *       - Video
+ *     parameters:
+ *       - in: path
+ *         name: videoId
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:

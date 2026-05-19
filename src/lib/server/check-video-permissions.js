@@ -6,7 +6,7 @@ import { and, eq, exists } from 'drizzle-orm';
 
 /**
  * 
- * @param {string} userId 
+ * @param {string|undefined} userId 
  * @param {string} videoId 
  * @param {string|null} token 
  * @returns 
@@ -20,13 +20,13 @@ export default async function checkVideoPermissions(userId, videoId, token) {
 
 	const isOwner = userId === row.userId;
 	if (!isOwner) {
-		const permissionsResponse = await auth.api.userHasPermission({
+		const permissionsResponse = userId !== undefined && await auth.api.userHasPermission({
 			body: {
 				userId,
 				permissions: { file: ['watch'] }
 			},
 		});
-		if (!permissionsResponse.success) {
+		if (!permissionsResponse || !permissionsResponse.success) {
 			// Public link access
 			if (!token) return { response: json({ error: 'Not found' }, { status: 404 }) };
 

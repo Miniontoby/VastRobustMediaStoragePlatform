@@ -24,7 +24,7 @@ export default async function grantVideoAccess(ownerId, videoId, customerEmail) 
 		where: eq(user.email, customerEmail),
 	});
 
-	if (targetUser) {
+	if (ownerId !== undefined && targetUser) {
 		const permissionsResponse = await auth.api.userHasPermission({
 			body: {
 				userId: targetUser.id,

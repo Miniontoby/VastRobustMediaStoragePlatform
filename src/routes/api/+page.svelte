@@ -67,7 +67,7 @@
 </svelte:head>
 
 <div class="swagger-container">
-	<div id="swagger-ui-container" bind:this="{containerElement}"></div>
+	<div id="swagger-ui-container" bind:this={containerElement}></div>
 </div>
 
 <style>
