@@ -7,10 +7,17 @@ import { getRequestEvent } from '$app/server';
 import { db } from './db';
 import { ac, uploader, user, admin as adminRole } from './auth-permissions';
 import { defaultFrom, transporter } from './mailer';
+import { building } from '$app/environment';
 
-export const auth = db !== null ? betterAuth({
+export const auth = (db !== null && !building) ? betterAuth({
 	baseURL: env.ORIGIN,
 	secret: env.BETTER_AUTH_SECRET,
+	trustedOrigins: [],
+	rateLimit: {
+		enabled: true,
+		window: 10,
+		max: 10,
+	},
 	database: drizzleAdapter(db, { provider: 'mysql' }),
 	emailVerification: {
 		sendOnSignUp: true,

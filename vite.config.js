@@ -9,14 +9,19 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
+import { visualizer } from 'rollup-plugin-visualizer';
 const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
+
+process.on('uncaughtException', (e) => {
+  console.error('UNCAUGHT:', e.message, e.stack);
+});
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   plugins: [tailwindcss(), openapiPlugin(), sveltekit(), devtoolsJson(), paraglideVitePlugin({
     project: './project.inlang',
     outdir: './src/lib/paraglide'
-  })],
+  }), visualizer({ emitFile: true, filename: 'stats.html' })],
   test: {
     expect: {
       requireAssertions: true
@@ -64,5 +69,24 @@ export default defineConfig({
         }
       }
     }]
-  }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('swagger-ui-dist') || id.includes('node_modules/swagger')) return 'vendor-swagger';
+          if (id.includes('node_modules/hls.js')) return 'vendor-hls';
+          if (id.includes('sveltejs') || id.includes('node_modules/@sveltejs') || id.includes('node_modules/svelte')) return 'vendor-svelte';
+          if (id.includes('node_modules/better-auth')) return 'vendor-better-auth';
+          if (id.includes('better-auth/core') && id.includes('/social-providers')) return 'vendor-better-auth-social-providers';
+          if (id.includes('node_modules/zod')) return 'vendor-zod';
+          if (id.includes('node_modules/jose')) return 'vendor-jose';
+          if (id.includes('node_modules')) return 'vendor';
+          if (id.includes('/src/lib/')) return 'lib';
+
+          return null;
+        },
+      },
+    },
+  },
 });

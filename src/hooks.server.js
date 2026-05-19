@@ -5,7 +5,8 @@ import { svelteKitHandler } from 'better-auth/svelte-kit';
 import { getTextDirection } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 
-/** @type {import('@sveltejs/kit').Handle} */ const handleParaglide = ({ event, resolve }) => paraglideMiddleware(event.request, ({ request, locale }) => {
+/** @type {import('@sveltejs/kit').Handle} */
+const handleParaglide = ({ event, resolve }) => paraglideMiddleware(event.request, ({ request, locale }) => {
 	event.request = request;
 
 	return resolve(event, {
@@ -13,7 +14,8 @@ import { paraglideMiddleware } from '$lib/paraglide/server';
 	});
 });
 
-/** @type {import('@sveltejs/kit').Handle} */ const handleBetterAuth = async ({ event, resolve }) => {
+/** @type {import('@sveltejs/kit').Handle} */
+const handleBetterAuth = async ({ event, resolve }) => {
 	if (!auth) return resolve(event);
 
 	const session = await auth.api.getSession({
@@ -28,5 +30,13 @@ import { paraglideMiddleware } from '$lib/paraglide/server';
 	return svelteKitHandler({ event, resolve, auth, building });
 };
 
-export /** @type {import('@sveltejs/kit').Handle} */ const handle = sequence(handleParaglide, handleBetterAuth);
+/** @type {import('@sveltejs/kit').Handle} */
+const handleSecurityHeaders = async ({ event, resolve }) => {
+	const response = await resolve(event);
+	response.headers.set('X-Content-Type-Options', 'nosniff');
+	return response;
+};
+
+export /** @type {import('@sveltejs/kit').Handle} */
+const handle = sequence(handleParaglide, handleBetterAuth, handleSecurityHeaders);
 /** @type {import('@sveltejs/kit').Handle} */

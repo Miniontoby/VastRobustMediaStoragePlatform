@@ -6,13 +6,20 @@ This is a project for college.
 
 ## Installing
 
-You can clone and then install using pnpm install!.
+You can clone and then install using pnpm install!
 
 ```sh
 git clone https://github.com/Miniontoby/VastRobustMediaStoragePlatform.git
 cd VastRobustMediaStoragePlatform
 pnpm install
 ```
+
+Make sure you have NodeJS installed and that you got pnpm installed as well. To install pnpm, you can run this command:
+```sh
+npm install --global pnpm@latest-11
+```
+(may require root privileges under unix systems)
+
 
 ### Installing on Openbsd
 
@@ -73,6 +80,26 @@ pnpm run dev
 # or start the server and open the app in a new browser tab
 pnpm run dev -- --open
 ```
+
+## Testing
+
+To run the unit test and UI tests that are included in the project you can use this command:
+```sh
+pnpm run test
+```
+
+If you need to specifically only test unit tests:
+```sh
+pnpm run test:unit
+```
+
+If you need to specifically only test UI/e2e tests:
+```sh
+pnpm run test:e2e
+```
+
+**Note: Tests must be ran before making any pull requests! and preferably also add new ones for the use cases you're adding!**
+
 
 ## Building
 
