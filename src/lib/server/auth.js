@@ -1,8 +1,8 @@
 import { betterAuth } from 'better-auth/minimal';
-import { admin as adminPlugin } from 'better-auth/plugins';
+import { admin as adminPlugin, testUtils } from 'better-auth/plugins';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { sveltekitCookies } from 'better-auth/svelte-kit';
-import { env } from '$env/dynamic/private';
+import { env } from '$env/dynamic/private'; // playright does not like this
 import { getRequestEvent } from '$app/server';
 import { db } from './db';
 import { ac, uploader, user, admin as adminRole } from './auth-permissions';
@@ -43,6 +43,9 @@ export const auth = (db !== null && !building) ? betterAuth({
 		},
 	},
 	plugins: [
+        ...(env.NODE_ENV === "test"
+            ? [testUtils()]
+            : []),
 		adminPlugin({
 			ac,
 			roles: { uploader, user, admin: adminRole },

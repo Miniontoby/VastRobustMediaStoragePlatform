@@ -5,13 +5,13 @@
 
 	/** @type {{ videoId: string; token: string|null; downloadingEnabled: boolean }} */
 	const { videoId, token = null, downloadingEnabled = false } = $props();
-	
+
 	/** @type {HTMLVideoElement} */
 	let videoEl;
 	/** @type {Hls|undefined} */
 	let hls;
 
-	const manifestUrl = $derived(resolve("/api/video/[videoId]/manifest.m3u8", { videoId }) + (token ? `?token=${token}` : ''));
+	const manifestUrl = $derived(resolve('/api/video/[videoId]/manifest.m3u8', { videoId }) + (token ? `?token=${token}` : ''));
 
 	onMount(() => {
 		if (Hls.isSupported()) {
@@ -27,7 +27,7 @@
 	onDestroy(() => hls?.destroy());
 </script>
 
-<video class="max-w-full max-h-full" bind:this={videoEl} controls>
+<video class="max-h-full max-w-full" bind:this={videoEl} controls>
 	<source />
 	<track kind="captions" />
 </video>

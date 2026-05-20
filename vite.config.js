@@ -39,7 +39,7 @@ export default defineConfig({
           }]
         },
         include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
-        exclude: ['src/lib/server/**']
+        exclude: ['src/lib/server/**'],
       }
     }, {
       extends: './vite.config.js',
@@ -47,7 +47,7 @@ export default defineConfig({
         name: 'server',
         environment: 'node',
         include: ['src/**/*.{test,spec}.{js,ts}'],
-        exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
+        exclude: ['src/**/*.svelte.{test,spec}.{js,ts}'],
       }
     }, {
       extends: true,
@@ -66,7 +66,7 @@ export default defineConfig({
           instances: [{
             browser: 'chromium'
           }]
-        }
+        },
       }
     }]
   },
