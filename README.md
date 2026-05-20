@@ -16,7 +16,7 @@ pnpm install
 
 Make sure you have NodeJS installed and that you got pnpm installed as well. To install pnpm, you can run this command:
 ```sh
-npm install --global pnpm@latest-11
+npm install --global pnpm@latest-10
 ```
 (may require root privileges under unix systems)
 
@@ -28,23 +28,21 @@ This is needed because these packages do not provide direct support for OpenBSD.
 
 Save the following code into `fix_openbsd.patch` file and then run `git apply fix_openbsd.patch`
 ```patch
-diff --git a/package.json b/package.json
-index c66eba2..8d20d0d 100644
---- a/package.json
-+++ b/package.json
-@@ -97,7 +97,11 @@
-                        ]
-                },
-                "overrides": {
--                       "better-call": ">=1.3.5"
-+                       "better-call": ">=1.3.5",
-+                       "rollup": "npm:@rollup/wasm-node",
-+                       "@parcel/watcher": "npm:@parcel/watcher-wasm",
-+                       "lightningcss": "npm:lightningcss-wasm",
-+                       "@tailwindcss/oxide": "npm:@tailwindcss/oxide-wasm32-wasi"
-                }
-        }
- }
+diff --git a/pnpm-workspace.yaml b/pnpm-workspace.yaml
+index 79b9e34..ca093e0 100644
+--- a/pnpm-workspace.yaml
++++ b/pnpm-workspace.yaml
+@@ -6,6 +6,10 @@ allowBuilds:
+
+ overrides:
+   'better-call': '>=1.3.5'
++  'rollup': 'npm:@rollup/wasm-node'
++  '@parcel/watcher': 'npm:@parcel/watcher-wasm'
++  'lightningcss': 'npm:lightningcss-wasm'
++  '@tailwindcss/oxide': 'npm:@tailwindcss/oxide-wasm32-was'
+
+ supportedArchitectures:
+   os:
 ```
 
 After that is done, then you can run the install like normal:
@@ -62,6 +60,7 @@ You must also install ffmpeg and add it to PATH or put it inside the folder of t
 To initialize, you have to copy `.env.example` and name the new file `.env`
 
 Then go edit `.env` and fill in your database details, and the ORIGIN (e.g.: `https://yourdomain.com`) and fill in a secret key for auth.
+The migrations are made for use with MariaDB, not with MySQL. Altho you technically can use MySQL if you change one line.
 
 Then to initialize the database, you run this:
 ```sh
@@ -92,6 +91,8 @@ If you need to specifically only test unit tests:
 ```sh
 pnpm run test:unit
 ```
+To run the auth.spec.js test, you will need a working database connection in the .env file!
+
 
 If you need to specifically only test UI/e2e tests:
 ```sh
@@ -110,6 +111,12 @@ pnpm run build
 ```
 
 You can preview the production build with `pnpm run preview`.
+
+
+# First time use
+
+After installing and setting up the database for the first time, you need to register your first account as soon as you can.
+This first account will be your admin account! After an admin account has been registered, the register form will only be used to register as a normal user.
 
 
 # Threat model mitigrations
