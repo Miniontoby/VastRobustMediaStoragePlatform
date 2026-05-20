@@ -6,10 +6,6 @@ allowBuilds:
 
 overrides:
   'better-call': '>=1.3.5'
-  'rollup': 'npm:@rollup/wasm-node'
-  '@parcel/watcher': 'npm:@parcel/watcher-wasm'
-  'lightningcss': 'npm:lightningcss-wasm'
-  '@tailwindcss/oxide': 'npm:@tailwindcss/oxide-wasm32-was'
 
 supportedArchitectures:
   os:
