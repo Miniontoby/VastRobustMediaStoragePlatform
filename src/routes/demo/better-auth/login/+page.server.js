@@ -48,12 +48,10 @@ export const actions = {
 		try {
 			if (isFirst) {
 				await auth.api.createUser({
-					body: {
-						email,
-						password,
-						name,
-						role: 'admin'
-					}
+					email,
+					password,
+					name,
+					role: 'admin'
 				});
 			} else {
 				await auth.api.signUpEmail({
