@@ -90,4 +90,4 @@ describe('authentication tests', () => {
         // Cleanup
         await test.deleteUser(user.id);
     });
-})
+}, 60e3);

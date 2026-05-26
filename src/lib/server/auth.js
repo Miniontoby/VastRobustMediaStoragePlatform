@@ -25,7 +25,7 @@ export const auth = (db !== null && !building) ? betterAuth({
 			void transporter.sendMail({
 				from: defaultFrom,
 				to: user.email,
-				subject: "Verify your account",
+				subject: 'Verify your account',
 				html: `<p>Click the link to verify your e-mail: <a href="${url}">${url}</a></p>`,
 			}).catch(e => console.error('sendVerificationEmail failed', e));
 		},
@@ -37,13 +37,13 @@ export const auth = (db !== null && !building) ? betterAuth({
 			void transporter.sendMail({
 				from: defaultFrom,
 				to: user.email,
-				subject: "Password Recovery",
+				subject: 'Password Recovery',
 				html: `<p>Click the link to reset your password: <a href="${url}">${url}</a></p>`,
 			}).catch(e => console.error('sendResetPassword failed', e));
 		},
 	},
 	plugins: [
-        ...(env.NODE_ENV === "test"
+        ...(env.NODE_ENV === 'test'
             ? [testUtils()]
             : []),
 		adminPlugin({

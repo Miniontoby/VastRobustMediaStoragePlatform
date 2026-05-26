@@ -1,6 +1,9 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { auth } from '$lib/server/auth';
 import { APIError } from 'better-auth/api';
+import { user } from '$lib/server/db/auth.schema.js';
+import { db } from '$lib/server/db/index.js';
+import { eq } from 'drizzle-orm';
 
 export const load = async (event) => {
 	if (event.locals.user) {
@@ -12,7 +15,7 @@ export const load = async (event) => {
 export const actions = {
 	signInEmail: async (event) => {
 		if (!auth)
-			return fail(503, { message: 'Service Unavailable' });
+			return fail(503, { message: 'Service Unavailable', success: false });
 
 		const formData = await event.request.formData();
 		const email = formData.get('email')?.toString() ?? '';
@@ -28,17 +31,16 @@ export const actions = {
 			});
 		} catch (error) {
 			if (error instanceof APIError) {
-				return fail(400, { message: error.message || 'Signin failed' });
+				return fail(400, { message: error.message || 'Signin failed', success: false });
 			}
-			return fail(500, { message: 'Unexpected error' });
+			return fail(500, { message: 'Unexpected error', success: false });
 		}
 
 		return redirect(302, '/demo/better-auth');
 	},
 	signUpEmail: async (event) => {
-		if (!auth)
+		if (!auth || !db)
 			return fail(503, { message: 'Service Unavailable' });
-		const isFirst = (await auth.api.listUsers()).total === 0;
 
 		const formData = await event.request.formData();
 		const email = formData.get('email')?.toString() ?? '';
@@ -46,35 +48,30 @@ export const actions = {
 		const name = formData.get('name')?.toString() ?? '';
 
 		try {
-			if (isFirst) {
-				await auth.api.createUser({
+			const u = await auth.api.signUpEmail({
+				body: {
 					email,
 					password,
 					name,
-					role: 'admin'
-				});
-			} else {
-				await auth.api.signUpEmail({
-					body: {
-						email,
-						password,
-						name,
-						callbackURL: '/auth/verification-success',
-					}
-				});
-			}
+					callbackURL: '/auth/verification-success',
+				}
+			});
+
+			const list = await db.select().from(user).limit(1);
+			if (list.length === 0)
+				await db.update(user).set({ role: 'admin' }).where(eq(user.id, u.user.id));
 		} catch (error) {
 			if (error instanceof APIError) {
-				return fail(400, { message: error.message || 'Registration failed' });
+				return fail(400, { message: error.message || 'Registration failed', success: false });
 			}
-			return fail(500, { message: 'Unexpected error' });
+			return fail(500, { message: 'Unexpected error', success: false });
 		}
 
-		return redirect(302, '/demo/better-auth');
+		return fail(200, { message: 'Check your email', success: true });
 	},
 	resetPassword: async (event) => {
 		if (!auth)
-			return fail(503, { message: 'Service Unavailable' });
+			return fail(503, { message: 'Service Unavailable', success: false });
 
 		const formData = await event.request.formData();
 		const email = formData.get('email')?.toString() ?? '';
@@ -88,9 +85,9 @@ export const actions = {
 			});
 		} catch (error) {
 			if (error instanceof APIError) {
-				return fail(400, { message: error.message || 'Registration failed' });
+				return fail(400, { message: error.message || 'Registration failed', success: false });
 			}
-			return fail(500, { message: 'Unexpected error' });
+			return fail(500, { message: 'Unexpected error', success: false });
 		}
 
 		return redirect(302, '/demo/better-auth');
