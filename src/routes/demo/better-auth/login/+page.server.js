@@ -48,6 +48,8 @@ export const actions = {
 		const name = formData.get('name')?.toString() ?? '';
 
 		try {
+			const list = await db.select().from(user).limit(1);
+
 			const u = await auth.api.signUpEmail({
 				body: {
 					email,
@@ -57,7 +59,6 @@ export const actions = {
 				}
 			});
 
-			const list = await db.select().from(user).limit(1);
 			if (list.length === 0)
 				await db.update(user).set({ role: 'admin' }).where(eq(user.id, u.user.id));
 		} catch (error) {
