@@ -45,10 +45,10 @@ export const video = mysqlTable(
 export const videoAccess = mysqlTable(
 	'video_access',
 	{
-		userId: varchar("user_id", { length: 255 })
+		userId: varchar('user_id', { length: 255 })
 			.notNull()
 			.references(() => user.id, { onDelete: 'cascade' }),
-		videoId: varchar("video_id", { length: 36 })
+		videoId: varchar('video_id', { length: 36 })
 			.notNull()
 			.references(() => video.id, { onDelete: 'cascade' }),
 	},

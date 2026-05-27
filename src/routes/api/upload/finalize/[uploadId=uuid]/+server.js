@@ -232,7 +232,7 @@ export const POST = async ({ params, locals }) => {
 	if (!session || session.userId !== userId)
 		return json({ error: 'Unknown uploadId' }, { status: 404 });
 
-	const receivedChunks = /** @type {number[]} */ JSON.parse(String(session.receivedChunks));
+	const receivedChunks = /** @type {number[]} */ Array.isArray(session.receivedChunks) ? session.receivedChunks : JSON.parse(String(session.receivedChunks));
 	if (receivedChunks.length !== session.totalChunks)
 		return json({
 			error: 'Not all chunks received',

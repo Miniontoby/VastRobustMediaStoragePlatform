@@ -83,7 +83,7 @@ export const GET = async ({ params, locals }) => {
 	if (!session || session.userId !== userId)
 		return json({ error: 'Unknown uploadId' }, { status: 404 });
 
-	const receivedChunks = /** @type {number[]} */ JSON.parse(String(session.receivedChunks));
+	const receivedChunks = /** @type {number[]} */ Array.isArray(session.receivedChunks) ? session.receivedChunks : JSON.parse(String(session.receivedChunks));
 	const missingChunks = Array.from(
 		{ length: session.totalChunks },
 		(_, i) => i

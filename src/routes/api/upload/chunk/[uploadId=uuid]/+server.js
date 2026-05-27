@@ -106,7 +106,7 @@ export const POST = async ({ request, params, locals }) => {
 	const chunkPath = path.join(uploadPath, `${chunkIndex}.part`);
 	await writeFile(chunkPath, chunkBuffer);
 
-	const receivedChunks = /** @type {number[]} */ JSON.parse(String(session.receivedChunks));
+	const receivedChunks = /** @type {number[]} */ Array.isArray(session.receivedChunks) ? session.receivedChunks : JSON.parse(String(session.receivedChunks));
 	if (!receivedChunks.includes(chunkIndex))
 		receivedChunks.push(chunkIndex);
 
