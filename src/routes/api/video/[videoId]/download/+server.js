@@ -8,7 +8,9 @@ import { json } from '@sveltejs/kit';
 
 const UPLOAD_DIR = env.UPLOAD_DIR ?? '/tmp/uploads';
 
-/** @type {import('./$types').RequestHandler} */
+/**
+ * @type {import('./$types').RequestHandler}
+ */
 export const GET = async ({ params, locals, url }) => {
 	const userId = locals.user?.id;
 
@@ -19,8 +21,12 @@ export const GET = async ({ params, locals, url }) => {
 
 	const row = result.row;
 
-	const [link] = await db.select().from(publicLink).where(eq(publicLink.videoId, row.id)).limit(1);
-	if (!link?.downloadingEnabled) return { response: json({ error: 'Unauthorized' }, { status: 401 }) };
+	const isOwner = userId === row.userId;
+
+	if (!isOwner) {
+		const [link] = await db.select().from(publicLink).where(eq(publicLink.videoId, row.id)).limit(1);
+		if (!link?.downloadingEnabled) return { response: json({ error: 'Unauthorized' }, { status: 401 }) };
+	}
 
 	const filePath = path.join(UPLOAD_DIR, `${row.id}.mp4`);
 
