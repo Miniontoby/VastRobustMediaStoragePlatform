@@ -32,6 +32,7 @@
 	<track kind="captions" />
 </video>
 {#if downloadingEnabled}
+	<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 	<a class="btn btn-primary" href={resolve('/api/video/[videoId]/download', { videoId }) + (token ? `?token=${token}` : '')} download>
 		Download Video
 	</a>
